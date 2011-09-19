@@ -14,8 +14,7 @@ public class DbPoolUtil {
 	private static DbPoolUtil instance = null;
 	private DbPoolUtil() {
 		// 读取数据库连接信息
-		connectBean = new DbConnectBean();
-		connectBean = new DbXmlParseUtil(connectBean).readConnectBean();
+		connectBean = new DbXmlParseUtil().parseConnectXml();
 		dataSource = new ComboPooledDataSource();
 		// 设置jdbc连接信息
 		dataSource.setUser(connectBean.userName);
