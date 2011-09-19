@@ -17,6 +17,10 @@ public class Friend implements Cloneable, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	public final static String USER_ID = "user_id";
+	public final static String FRIEND_ID = "friend_id";
+	
+	
 	private int userId;
 	private int friendId;
 	public int getUserId() {

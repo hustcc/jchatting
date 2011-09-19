@@ -16,6 +16,8 @@ public class Group implements Serializable, Cloneable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	
+	
 	private int id;
 	private String code;
 	private String name;

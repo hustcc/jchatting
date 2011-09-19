@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
 import com.jchatting.db.bean.Friend;
@@ -43,8 +42,8 @@ public class Test {
 					new MapListHandler());
 			for (int i = 0; i < results.size(); i++) {
 				Map<?, ?> map = (Map<?, ?>)results.get(i);
-				System.out.println(" userid: " + map.get("user_id")
-						+ " ,frieng_id: " + map.get("friend_id"));
+				System.out.println(" userid: " + map.get(Friend.USER_ID)
+						+ " ,frieng_id: " + map.get(Friend.FRIEND_ID));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
