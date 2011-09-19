@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseInfo>
+    <driver>net.sourceforge.jtds.jdbc.Driver</driver>
+	<url>jdbc:jtds:sqlserver://122.205.7.93:2433;DatabaseName=jchatting</url>
+	<user>sa</user>
+	<password>19870526</password>
+	<sessionTime></sessionTime>
+	<sbId></sbId>
+</databaseInfo>
