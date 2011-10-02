@@ -41,23 +41,7 @@ public class PackageUtil {
 		}
 		else {
 			try {
-				dataPackage.setType(Integer.valueOf(data.substring(0, 1)));
-//				if (Integer.valueOf(data.substring(0, 1)) == DataPackage.USER) {
-//					dataPackage.setType(DataPackage.USER);
-//				}
-//				else if (Integer.valueOf(data.substring(0, 1)) == DataPackage.GROUP) {
-//					dataPackage.setType(DataPackage.GROUP);
-//				}
-//				else if (Integer.valueOf(data.substring(0, 1)) == DataPackage.SYSTEM) {
-//					dataPackage.setType(DataPackage.SYSTEM);
-//				}
-//				else if (Integer.valueOf(data.substring(0, 1)) == DataPackage.CLIENT_ON) {
-//					dataPackage.setType(DataPackage.CLIENT_ON);
-//				}
-//				else {
-//					dataPackage.setType(DataPackage.OTHER);
-//				}
-				
+				dataPackage.setType(Integer.valueOf(data.substring(0, 1)));			
 				dataPackage.setSendId(data.subSequence(1, 21).toString().trim());
 				dataPackage.setReceiveId(data.subSequence(21, 41).toString().trim());
 				dataPackage.setContent(data.substring(41));

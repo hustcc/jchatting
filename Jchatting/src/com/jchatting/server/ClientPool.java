@@ -8,6 +8,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import com.jchatting.exception.OutOfPoolSizeException;
 
@@ -119,5 +122,13 @@ public class ClientPool {
 
 	public static int size() {
 		return clientPool.size();
+	}
+	public synchronized static Set<String> getOnlineUsers() {
+		Set<String> userSet = new HashSet<String>();
+		Iterator<String> keyIterator = clientPool.keySet().iterator();
+		while (keyIterator.hasNext()) {
+			userSet.add(keyIterator.next());
+		}
+		return userSet;
 	}
 }

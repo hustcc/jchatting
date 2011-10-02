@@ -20,7 +20,8 @@ import com.jchatting.db.persistent.DbPoolUtil;
  */
 public class UserImpl implements UserDao {
 
-	public static final int USER_EXIST = 100;
+	public static final int USER_EXIST = -101;
+	public static final int USER_NOT_EXIST = -102;
 	/**
 	 * 
 	 */

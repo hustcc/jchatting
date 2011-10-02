@@ -5,16 +5,21 @@ package com.jchatting.db;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 
 import com.jchatting.client.LoginResult;
 import com.jchatting.db.bean.Friend;
 import com.jchatting.db.bean.User;
+import com.jchatting.db.bean.UserInGroup;
 import com.jchatting.db.bean.UserMessage;
+import com.jchatting.db.bean.UserUser;
 import com.jchatting.db.dao.impl.FriendImpl;
 import com.jchatting.db.dao.impl.UserImpl;
+import com.jchatting.db.dao.impl.UserInGroupImpl;
 import com.jchatting.db.dao.impl.UserMessageImpl;
+import com.jchatting.db.dao.impl.UserUserImpl;
 import com.jchatting.pack.DataPackage;
 
 /**
@@ -22,9 +27,74 @@ import com.jchatting.pack.DataPackage;
  * @version 2011-9-24 下午07:07:31
  */
 public class DbHanddle {
-
+	
+	public ArrayList<String> getAllUserAccountInGroup(String groupId) {
+		return new UserInGroupImpl().findAllUserInGroup(groupId);
+	}
+	/**
+	 * 获得一个用户的所有群信息
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午04:37:41
+	 * @param user
+	 * @return
+	 */
+	public Map<String,UserInGroup> getAllGroupOfUser(User user) {
+		return new UserInGroupImpl().findAllGroupOfUser(user);
+	}
+	/**
+	 * 通过用户帐号获得用户的所有信息
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午02:32:50
+	 * @param account
+	 * @return
+	 */
+	public User getUserByAccount(String account) {
+		return new UserImpl().findByAccount(account);
+	}
+	/**
+	 * 注册新用户
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午02:33:09
+	 * @param user
+	 * @return
+	 */
 	public int registeUser(User user) {
 		return new UserImpl().insert(user);
+	}
+	/**
+	 * add friend
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午01:32:09
+	 * @param userAccount
+	 * @param friendAccount
+	 * @return
+	 */
+	public int addFriend(String userAccount, String friendAccount) {
+		
+		if (getUserByAccount(friendAccount) != null) {
+			UserUser userUser = new UserUser();
+			userUser.setAccountUser(userAccount);
+			userUser.setAccountFriend(friendAccount);
+			userUser.setAttach("");
+			return new UserUserImpl().add(userUser);
+		}
+		else {
+			return UserImpl.USER_NOT_EXIST;
+		}
+	}
+	/**
+	 * del friend
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午01:32:15
+	 * @param userAccount
+	 * @param friendAccount
+	 * @return
+	 */
+	public boolean delFriend(String userAccount, String friendAccount) {
+		UserUser userUser = new UserUser();
+		userUser.setAccountUser(userAccount);
+		userUser.setAccountFriend(friendAccount);
+		return new UserUserImpl().delete(userUser);
 	}
 	
 	public int setUserOnline(String account, boolean online) {

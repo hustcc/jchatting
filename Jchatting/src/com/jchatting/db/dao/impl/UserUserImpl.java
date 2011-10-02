@@ -19,6 +19,9 @@ import com.jchatting.db.persistent.DbPoolUtil;
  */
 public class UserUserImpl implements UserUserDao {
 
+	public static final int USERUSER_EXIST = -100;
+	public static final int INSERT_USERUSER_SUCCESS = 5;
+	public static final int INSERT_USERUSER_ERROR= -1;
 	/**
 	 * 
 	 */
@@ -26,6 +29,67 @@ public class UserUserImpl implements UserUserDao {
 		// TODO Auto-generated constructor stub
 	}
 
+	public int add(UserUser userUser) {
+		String sql_query = "select id from user_user where account_user = (?) AND account_friend = (?);";
+		
+		String sql_insert = "insert into user_user(account_user, account_friend, attach, memo) values (?, ?, ?, ?)";
+		Connection connection = DbPoolUtil.getInstance().getConnection();
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(sql_query);
+			preparedStatement.setString(1, userUser.getAccountUser());
+			preparedStatement.setString(2, userUser.getAccountFriend());
+			if (preparedStatement.executeQuery().next()) {
+				return USERUSER_EXIST;
+			}
+			
+			preparedStatement = connection.prepareStatement(sql_insert);
+			preparedStatement.setString(1, userUser.getAccountUser());
+			preparedStatement.setString(2, userUser.getAccountFriend());
+			preparedStatement.setString(3, userUser.getAttach());
+			preparedStatement.setString(4, userUser.getMemo());
+			preparedStatement.execute();
+			
+			preparedStatement = connection.prepareStatement(sql_insert);
+			preparedStatement.setString(1, userUser.getAccountFriend());
+			preparedStatement.setString(2, userUser.getAccountUser());
+			preparedStatement.setString(3, userUser.getAttach());
+			preparedStatement.setString(4, userUser.getMemo());
+			preparedStatement.execute();
+			
+			return INSERT_USERUSER_SUCCESS;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			return INSERT_USERUSER_ERROR;
+		} finally {
+			closeAll(connection);
+		}
+	}
+	
+	public boolean delete(UserUser userUser) {
+		String sql = "delete from user_user where account_user = (?) AND account_friend = (?)";
+		Connection connection = DbPoolUtil.getInstance().getConnection();
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, userUser.getAccountUser());
+			preparedStatement.setString(2, userUser.getAccountFriend());
+			preparedStatement.execute();
+			
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, userUser.getAccountFriend());
+			preparedStatement.setString(2, userUser.getAccountUser());
+			preparedStatement.execute();
+			return true;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			return false;
+		} finally {
+			closeAll(connection);
+		}
+	}
+	
+	
 	/* (non-Javadoc)
 	 * @see com.jchatting.db.dao.UserUserDao#findAllByAccount(java.lang.String)
 	 */

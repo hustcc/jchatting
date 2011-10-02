@@ -9,10 +9,12 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import com.jchatting.client.ui.ChatGroupFrame;
 import com.jchatting.client.ui.ChatMainFrame;
 import com.jchatting.client.ui.ChatUserFrame;
 import com.jchatting.client.ui.LoginFrame;
 import com.jchatting.db.bean.Friend;
+import com.jchatting.db.bean.UserInGroup;
 import com.jchatting.pack.DataPackage;
 
 /**
@@ -58,7 +60,7 @@ public class ClientThread extends Thread {
 	private void twoClientOnline() {
 		try {
 			JOptionPane.showMessageDialog(mainFrame, "您的帐号在其他地方登录，或者网络存在异常！", "Error", JOptionPane.ERROR_MESSAGE);
-			ChatFramePool.disposeAllFrame();
+			ChatUserFramePool.disposeAllFrame();
 			ChatMainFrame.getSocket().close();
 			ChatMainFrame.setSocket(null);
 			mainFrame.setVisible(false);
@@ -93,7 +95,7 @@ public class ClientThread extends Thread {
 	private void forward(DataPackage dataPackage) {
 		int type = dataPackage.getType();
 		String sendId = dataPackage.getSendId();
-//		String receiveId = dataPackage.getReceiveId();
+		String receiveId = dataPackage.getReceiveId();
 //		String content = dataPackage.getContent();
 		switch (type) {
 			case DataPackage.SYSTEM :
@@ -111,17 +113,17 @@ public class ClientThread extends Thread {
 				friendOnOffline(sendId, false);
 				break;
 			case DataPackage.USER :
-				ChatUserFrame chatUserFrame = ChatFramePool.getChatFrame(sendId);
+				ChatUserFrame chatUserFrame = ChatUserFramePool.getChatFrame(sendId);
 				if (chatUserFrame != null) {
 					chatUserFrame.setVisible(true);
 					chatUserFrame.receiveMsg(dataPackage, new Timestamp(System.currentTimeMillis()));
 				}
 				else {
 					//TODO 1.自动跳出聊天窗口
-					Friend friend = mainFrame.getFriendByAccount(dataPackage.getSendId());
+					Friend friend = mainFrame.getFriendByAccount(sendId);
 					chatUserFrame = new ChatUserFrame(mainFrame, friend);
 					chatUserFrame.setVisible(true);
-					ChatFramePool.addChatFrame(chatUserFrame);
+					ChatUserFramePool.addChatFrame(chatUserFrame);
 					chatUserFrame.receiveMsg(dataPackage, new Timestamp(System.currentTimeMillis()));
 					
 					//TODO 2.在主界面显示在消息数
@@ -130,7 +132,22 @@ public class ClientThread extends Thread {
 				break;
 				
 			case DataPackage.GROUP :
-				//TODO	
+				ChatGroupFrame chatGroupFrame = ChatGroupFramePool.getChatFrame(receiveId);
+				if (chatGroupFrame != null) {
+					chatGroupFrame.setVisible(true);
+					chatGroupFrame.receiveMsg(dataPackage, new Timestamp(System.currentTimeMillis()));
+				}
+				else {
+					//TODO 1.自动跳出聊天窗口
+					UserInGroup userInGroup = mainFrame.getUserInGroupByGroupId(receiveId);
+					chatGroupFrame = new ChatGroupFrame(mainFrame, userInGroup);
+					chatGroupFrame.setVisible(true);
+					ChatGroupFramePool.addChatFrame(chatGroupFrame);
+					chatGroupFrame.receiveMsg(dataPackage, new Timestamp(System.currentTimeMillis()));
+					
+					//TODO 2.在主界面显示在消息数
+					
+				}
 				break;
 					
 			case DataPackage.OTHER :

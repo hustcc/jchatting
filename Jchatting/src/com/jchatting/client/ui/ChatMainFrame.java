@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -25,14 +24,17 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.jchatting.client.ChatFramePool;
+import com.jchatting.client.ChatGroupFramePool;
+import com.jchatting.client.ChatUserFramePool;
 import com.jchatting.client.ClientMsgUtil;
 import com.jchatting.client.ClientThread;
 import com.jchatting.client.config.ClientConfig;
 import com.jchatting.db.DbHanddle;
 import com.jchatting.db.bean.Friend;
-import com.jchatting.db.bean.Group;
 import com.jchatting.db.bean.User;
+import com.jchatting.db.bean.UserInGroup;
+import com.jchatting.db.dao.impl.UserImpl;
+import com.jchatting.db.dao.impl.UserUserImpl;
 import com.jchatting.pack.DataPackage;
 
 public class ChatMainFrame extends JFrame implements ActionListener, MouseListener, WindowListener{
@@ -48,23 +50,39 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 
 //	private Vector<Friend> friendVector;
 	private Map<String, Friend> friendMap;
-	private Vector<Group> groupvecVector;
+	private Map<String, UserInGroup> groupMap;
 	
 	private JTree userTree;
-	private DefaultTreeModel treeModel;
-	private DefaultMutableTreeNode root;
+	private DefaultTreeModel userTreeModel;
+	private DefaultMutableTreeNode userRoot;
 	private DefaultMutableTreeNode online;
 	private DefaultMutableTreeNode offline;
 	
 	private JTree groupTree;
+	private DefaultTreeModel groupTreeModel;
+	private DefaultMutableTreeNode groupRoot;
 	
-	private JPopupMenu popupMenu;
-	private JPopupMenu addPopupMenu;
-	
+	private JPopupMenu userPopupMenu;
 	private JMenuItem chatItem;
-	private JMenuItem alterItem;
+//	private JMenuItem alterItem;
 	private JMenuItem delItem;
 	private JMenuItem addItem;
+	private JMenuItem userInfoItem;
+	private JMenuItem friendInfoItem;
+	
+	private JPopupMenu userPopupMenu_1;
+	private JMenuItem addItem_1;
+	private JMenuItem userInfoItem_1;
+	
+	private JPopupMenu grouPopupMenu;
+	private JMenuItem chatGroupItem;
+	private JMenuItem enterGroupItem;
+	private JMenuItem quitGroupItem;
+	private JMenuItem groupInfoItem;
+	
+	private JPopupMenu grouPopupMenu_1;
+	private JMenuItem enterGroupItem_1;
+	
 	
 	/**
 	 * Create the frame.
@@ -86,38 +104,83 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 		tabbedPane.addTab("JChat好友", null, userScrollPane, null);
 		tabbedPane.setEnabledAt(0, true);
 		
-		constractTree();
+		constructFriendTree();
 		
-		userTree = new JTree(treeModel);
+		userTree = new JTree(userTreeModel);
 		userTree.addMouseListener(this);
 		userScrollPane.setViewportView(userTree);
 		
 		JScrollPane groupScrollPane = new JScrollPane();
 		tabbedPane.addTab("JChat群组", null, groupScrollPane, null);
 		
-		groupTree = new JTree();
+		
+		constructGroupTree();
+		
+		groupTree = new JTree(groupTreeModel);
 		groupTree.addMouseListener(this);
 		groupScrollPane.setViewportView(groupTree);
 		
+		
 		setSize(300,500);
 		
-		popupMenu = new JPopupMenu();
-		chatItem = new JMenuItem("Chat");
-		chatItem.addActionListener(this);
-		delItem = new JMenuItem("Del Friend");
-		delItem.addActionListener(this);
-		alterItem = new JMenuItem("Edit Friend");
-		alterItem.addActionListener(this);
-		addItem = new JMenuItem("Add Friend");
-		addItem.addActionListener(this);
-		popupMenu.add(chatItem);
-		popupMenu.addSeparator();
-		popupMenu.add(alterItem);
-		popupMenu.add(delItem);
-		popupMenu.add(addItem);
+		userPopupMenu = new JPopupMenu();
 		
-		addPopupMenu = new JPopupMenu();
-		addPopupMenu.add(addItem);
+		chatItem = new JMenuItem("Chat");
+		delItem = new JMenuItem("Del Friend");
+//		alterItem = new JMenuItem("Edit Friend");
+		addItem = new JMenuItem("Add Friend");
+		userInfoItem = new JMenuItem("My Info");
+		friendInfoItem = new JMenuItem("Friend Info");
+		
+		chatItem.addActionListener(this);
+		delItem.addActionListener(this);
+//		alterItem.addActionListener(this);
+		addItem.addActionListener(this);
+		userInfoItem.addActionListener(this);
+		friendInfoItem.addActionListener(this);
+		
+		
+		userPopupMenu.add(chatItem);
+		userPopupMenu.addSeparator();
+		userPopupMenu.add(addItem);
+//		popupMenu.add(alterItem);
+		userPopupMenu.add(delItem);
+		userPopupMenu.addSeparator();
+		userPopupMenu.add(userInfoItem);
+		userPopupMenu.add(friendInfoItem);
+		
+		
+		userPopupMenu_1 = new JPopupMenu();
+		addItem_1 = new JMenuItem("Add Friend");
+		userInfoItem_1 = new JMenuItem("My Info");
+		addItem_1.addActionListener(this);
+		userInfoItem_1.addActionListener(this);
+		userPopupMenu_1.add(addItem_1);
+		userPopupMenu_1.addSeparator();
+		userPopupMenu_1.add(userInfoItem_1);
+		
+		
+		grouPopupMenu = new JPopupMenu();
+		chatGroupItem = new JMenuItem("Chat In Group");
+		enterGroupItem = new JMenuItem("Enter Group");
+		quitGroupItem = new JMenuItem("Quit The Group");
+		groupInfoItem = new JMenuItem("Group Info");
+		chatGroupItem.addActionListener(this);
+		enterGroupItem.addActionListener(this);
+		quitGroupItem.addActionListener(this);
+		groupInfoItem.addActionListener(this);
+		grouPopupMenu.add(chatGroupItem);
+		grouPopupMenu.addSeparator();
+		grouPopupMenu.add(enterGroupItem);
+		grouPopupMenu.add(quitGroupItem);
+		grouPopupMenu.addSeparator();
+		grouPopupMenu.add(groupInfoItem);
+		
+		grouPopupMenu_1 = new JPopupMenu();
+		enterGroupItem_1 = new JMenuItem("Enter Group");
+		enterGroupItem_1.addActionListener(this);
+		grouPopupMenu_1.add(enterGroupItem_1);
+		
 		
 		connectServerBySocket();
 		
@@ -146,30 +209,26 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 	}
 	
 	private void initUserAndGroup() {
-//		friendVector = handdle.getFriendList(this.user.getAccount());
 		friendMap = handdle.getFriendMap(this.user.getAccount());
-		//TODO
-		groupvecVector = null;
+		groupMap = handdle.getAllGroupOfUser(this.user);
 	}
 	public void reConstractTree(Map<String, Friend> friendMap) {
 		setFriendMap(friendMap);
-//		online.removeAllChildren();
-//		offline.removeAllChildren();
-		constractTree();
-		userTree.setModel(treeModel);
+		constructFriendTree();
+		userTree.setModel(userTreeModel);
 	}
 	/**
 	 * 根据数据库数据，构造树
 	 * @author Xewee.Zhiwei.Wang
 	 * @version 2011-9-30 下午07:44:27
 	 */
-	private void constractTree() {
-		root = new DefaultMutableTreeNode("JChatting");
+	private void constructFriendTree() {
+		userRoot = new DefaultMutableTreeNode("JChatting Friend List");
 		online = new DefaultMutableTreeNode("Online Friends");
 		offline = new DefaultMutableTreeNode("Offline Friends");
-		treeModel = new DefaultTreeModel(root);
-		treeModel.insertNodeInto(online, root, root.getChildCount());
-		treeModel.insertNodeInto(offline, root, root.getChildCount());
+		userTreeModel = new DefaultTreeModel(userRoot);
+		userTreeModel.insertNodeInto(online, userRoot,userRoot.getChildCount());
+		userTreeModel.insertNodeInto(offline, userRoot, userRoot.getChildCount());
 		
 		int onlineCount = 0;
 		int offlineCount = 0;
@@ -179,17 +238,32 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 			friend = (Friend) friIterator.next();
 			if (friend.isOnline()) {
 				DefaultMutableTreeNode online = new DefaultMutableTreeNode(friend);
-				treeModel.insertNodeInto(online, this.online, this.online.getChildCount());
+				userTreeModel.insertNodeInto(online, this.online, this.online.getChildCount());
 				onlineCount ++;
 			}
 			else {
 				DefaultMutableTreeNode offline = new DefaultMutableTreeNode(friend);
-				treeModel.insertNodeInto(offline, this.offline, this.offline.getChildCount());
+				userTreeModel.insertNodeInto(offline, this.offline, this.offline.getChildCount());
 				offlineCount ++;
 			}
 		}
 		online.setUserObject("Online Friends  [" + onlineCount + "]");
 		offline.setUserObject("Offline Friends  [" + offlineCount + "]");
+	}
+	
+	private void constructGroupTree() {
+		//todo
+		
+		groupRoot = new DefaultMutableTreeNode("JChatting Group List  [" + groupMap.size() + "]");
+		groupTreeModel = new DefaultTreeModel(groupRoot);
+		Iterator<UserInGroup> groupIterator = groupMap.values().iterator();
+		UserInGroup group = null;
+		while (groupIterator.hasNext()) {
+			group = groupIterator.next();
+			DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(group);
+			groupTreeModel.insertNodeInto(groupNode, this.groupRoot, this.groupRoot.getChildCount());
+			
+		}
 	}
 	/**
 	 * 通过好友的account得到好友的Friend所有信息
@@ -201,19 +275,49 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 	public Friend getFriendByAccount(String friendAccount) {
 		return friendMap.get(friendAccount);
 	}
+	public UserInGroup getUserInGroupByGroupId(String groupId) {
+		return this.groupMap.get(groupId);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		Object source = e.getSource();
 		if (source == delItem) {
-			System.out.println("del item");
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)userTree.getLastSelectedPathComponent();
+			if (node.isLeaf() && node.getUserObject() instanceof Friend) {
+				Friend friend = (Friend)node.getUserObject();
+				System.out.println(friend.getAccount());
+				if (new DbHanddle().delFriend(user.getAccount(), friend.getAccount())) {
+//					JOptionPane.showMessageDialog(this, "Delete friend " + friend.getAccount() + " success!");
+					this.friendMap.remove(friend.getAccount());
+					reConstractTree(this.friendMap);
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "Fail to delete friend [" + friend.getAccount() + "]");
+				}
+			}
 		}
-		else if (source == alterItem) {
-			System.out.println("alter item");
-		}
-		else if (source == addItem) {
-			System.out.println("add item");
+		else if (source == addItem || source == addItem_1) {
+			String friendAccount = JOptionPane.showInputDialog(this, "Input friend's account:");
+			int result = new DbHanddle().addFriend(user.getAccount(), friendAccount);
+			System.out.println("add result:" + result);
+			if (result == UserUserImpl.INSERT_USERUSER_SUCCESS) {
+				JOptionPane.showMessageDialog(this, "Add friend [" + friendAccount + "] success!");
+				User friendUser = new DbHanddle().getUserByAccount(friendAccount);
+				Friend friend = new Friend(friendUser, "", "", "");
+				this.friendMap.put(friendAccount, friend);
+				reConstractTree(this.friendMap);
+			}
+			else if (result == UserImpl.USER_NOT_EXIST) {
+				JOptionPane.showMessageDialog(this, "Friend [" + friendAccount + "] not exist!");
+			}
+			else if (result == UserUserImpl.USERUSER_EXIST) {
+				JOptionPane.showMessageDialog(this, "Friend [" + friendAccount + "] is exist in your friend list!");
+			}
+			else {
+				JOptionPane.showMessageDialog(this, "Add friend [" + friendAccount + "] error!");
+			}
 		}
 		else if (source == chatItem) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)userTree.getLastSelectedPathComponent();
@@ -222,11 +326,42 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 				System.out.println(friend.getAccount());
 				ChatUserFrame userFrame = new ChatUserFrame(this, friend);
 				userFrame.setVisible(true);
-				ChatFramePool.addChatFrame(userFrame);
+				ChatUserFramePool.addChatFrame(userFrame);
 			}
+		}
+		else if (source == userInfoItem || source == userInfoItem_1) {
+			//todo
+			System.out.println("userInfo item");
+			JOptionPane.showMessageDialog(this, "not supply!");
+		}
+		else if (source == friendInfoItem) {
+			//todo
+			System.out.println("friendInfo item");
+			JOptionPane.showMessageDialog(this, "not supply!");
+		}
+		else if (source == chatGroupItem) {
+			//todo
+			System.out.println("fchatGroupItem");
+			JOptionPane.showMessageDialog(this, "not supply!");
+		}
+		else if (source == enterGroupItem || source == enterGroupItem_1) {
+			//todo
+			System.out.println("enterGroupItem");
+			JOptionPane.showMessageDialog(this, "not supply!");
+		}
+		else if (source == quitGroupItem) {
+			//todo
+			System.out.println("quitGroupItem");
+			JOptionPane.showMessageDialog(this, "not supply!");
+		}
+		else if (source == groupInfoItem) {
+			//todo
+			System.out.println("groupInfoItem");
+			JOptionPane.showMessageDialog(this, "not supply!");
 		}
 		else {
 			System.out.println("other item");
+			JOptionPane.showMessageDialog(this, "not supply!");
 		}
 	}
 
@@ -242,9 +377,18 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 					System.out.println(friend.getAccount());
 					ChatUserFrame userFrame = new ChatUserFrame(this, friend);
 					userFrame.setVisible(true);
-					ChatFramePool.addChatFrame(userFrame);
+					ChatUserFramePool.addChatFrame(userFrame);
 				}
-				//TODO
+			}
+			else if (e.getSource() == groupTree) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)groupTree.getLastSelectedPathComponent();
+				if (node.isLeaf() && node.getUserObject() instanceof UserInGroup) {
+					UserInGroup userInGroup = (UserInGroup)node.getUserObject();
+					System.out.println(userInGroup.getAccount());
+					ChatGroupFrame groupFrame = new ChatGroupFrame(this, userInGroup);
+					groupFrame.setVisible(true);
+					ChatGroupFramePool.addChatFrame(groupFrame);
+				}
 			}
 		}
 	}
@@ -281,15 +425,26 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 					userTree.setSelectionPath(selPath);
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode)userTree.getLastSelectedPathComponent();
 					if (node.isLeaf() && node.getUserObject() instanceof Friend) {
-						popupMenu.show(e.getComponent(), X, Y);
+						userPopupMenu.show(e.getComponent(), X, Y);
 					}
 					else {
-						addPopupMenu.show(e.getComponent(), X, Y);
+						userPopupMenu_1.show(e.getComponent(), X, Y);
 					}
 				}
 			}
 			else if (source == groupTree) {
-				popupMenu.show(e.getComponent(), X, Y);
+//				int selRow = groupTree.getRowForLocation(e.getX(), e.getY());//返回节点所在的行，-1表示鼠标定位不在显示的单元边界内 
+                TreePath selPath = groupTree.getPathForLocation(e.getX(), e.getY());//返回指定节点的树路径 
+				if (selPath != null) {
+					groupTree.setSelectionPath(selPath);
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode)groupTree.getLastSelectedPathComponent();
+					if (node.isLeaf() && node.getUserObject() instanceof UserInGroup) {
+						grouPopupMenu.show(e.getComponent(), X, Y);
+					}
+					else {
+						grouPopupMenu_1.show(e.getComponent(), X, Y);
+					}
+				}
 			}
 			else {
 				

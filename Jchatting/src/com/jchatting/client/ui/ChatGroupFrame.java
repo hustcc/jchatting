@@ -12,7 +12,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -28,17 +27,15 @@ import javax.swing.JToggleButton;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import com.jchatting.client.ChatUserFramePool;
+import com.jchatting.client.ChatGroupFramePool;
 import com.jchatting.client.ClientMsgUtil;
 import com.jchatting.client.ui.ex.FontAttribute;
-import com.jchatting.db.DbHanddle;
-import com.jchatting.db.bean.Friend;
 import com.jchatting.db.bean.User;
-import com.jchatting.db.bean.UserMessage;
+import com.jchatting.db.bean.UserInGroup;
 import com.jchatting.pack.DataPackage;
 import com.jchatting.util.StringUtil;
 
-public class ChatUserFrame extends JFrame implements ActionListener, WindowListener {
+public class ChatGroupFrame extends JFrame implements ActionListener, WindowListener {
 
 	/**
 	 * 
@@ -46,9 +43,10 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 	private static final long serialVersionUID = 1L;
 	private ChatMainFrame mainFrame;
 	private User user;
-	private Friend friend;
+	private UserInGroup userInGroup;
 	
-	
+//	private JPanel contentPane;
+
 	private FontAttribute fontAttribute;
 	private StyledDocument document;
 	
@@ -68,16 +66,19 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 	
 	private Color foreColor;
 	private Color backColor;
-	
+
 	/**
 	 * Create the frame.
 	 */
-	public ChatUserFrame(ChatMainFrame mainFrame, Friend friend) {
+	public ChatGroupFrame(ChatMainFrame mainFrame, UserInGroup userInGroup) {
+		this.mainFrame = mainFrame;
 		this.user = mainFrame.getUser();
-		this.friend = friend;
+		this.userInGroup = userInGroup;
+		
 		this.fontAttribute = new FontAttribute();
 		
-		setTitle("Chat With [" + this.friend.getAccount()+"]");
+		
+		setTitle("Chat With [" + this.userInGroup.toString()+"]");
 		setBounds(100, 100, 350, 400);
 		setSize(400, 400);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -182,7 +183,7 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 					sendButtonAction();
 				}
 			}
-			});
+		});
 		
 		document = receiveTextPane.getStyledDocument();
 		
@@ -196,10 +197,11 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 		
 		changeSendTextPane();
 		
-		loadOfflineMsg();
-		
-		delOfflineMsg();
+//		loadOfflineMsg();
+//		
+//		delOfflineMsg();
 	}
+	
 	/**
 	 * 以一定的格式向textpane中添加字符串
 	 * @author Xewee.Zhiwei.Wang
@@ -214,27 +216,27 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 			e.printStackTrace();
 		}
 	}
-	private void delOfflineMsg() {
-		new DbHanddle().delMsgByAccount(friend.getAccount(), user.getAccount());
-	}
-	/**
-	 * 将数据库找中保存的离线消息显示出来！
-	 * @author Xewee.Zhiwei.Wang
-	 * @version 2011-9-29 下午08:18:27
-	 */
-	private void loadOfflineMsg() {
-		Vector<UserMessage> messages = new DbHanddle().getMsgByAccount(friend.getAccount(), user.getAccount());
-		UserMessage message = null;
-		DataPackage dataPackage = new DataPackage();
-		for (int i = 0; i < messages.size(); i++) {
-			message = messages.get(i);
-			dataPackage.setSendId(message.getSendAccount());
-			dataPackage.setReceiveId(message.getReceiveAccount());
-			dataPackage.setContent(message.getContent());
-			dataPackage.setType(DataPackage.USER);
-			receiveMsg(dataPackage, message.getSendTime());
-		}
-	}
+//	private void delOfflineMsg() {
+//		new DbHanddle().delMsgByAccount(friend.getAccount(), user.getAccount());
+//	}
+//	/**
+//	 * 将数据库找中保存的离线消息显示出来！
+//	 * @author Xewee.Zhiwei.Wang
+//	 * @version 2011-9-29 下午08:18:27
+//	 */
+//	private void loadOfflineMsg() {
+//		Vector<UserMessage> messages = new DbHanddle().getMsgByAccount(friend.getAccount(), user.getAccount());
+//		UserMessage message = null;
+//		DataPackage dataPackage = new DataPackage();
+//		for (int i = 0; i < messages.size(); i++) {
+//			message = messages.get(i);
+//			dataPackage.setSendId(message.getSendAccount());
+//			dataPackage.setReceiveId(message.getReceiveAccount());
+//			dataPackage.setContent(message.getContent());
+//			dataPackage.setType(DataPackage.USER);
+//			receiveMsg(dataPackage, message.getSendTime());
+//		}
+//	}
 	/**
 	 * 发送信息按钮的动作
 	 * @author Xewee.Zhiwei.Wang
@@ -252,13 +254,14 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 			String content = "    " + message;
 			insert(new FontAttribute(FontAttribute.SENDER_TIME_ATTRIBUTE), user_time);
 			insert(this.fontAttribute, content);
-			int type = DataPackage.USER;
+			int type = DataPackage.GROUP;
 			String sendId = user.getAccount();
-			String receiveId = friend.getAccount();
+			String receiveId = userInGroup.getId();
 			System.out.println("send content:" + message);
 			try {
 				if (ChatMainFrame.getSocket() == null) {
 					JOptionPane.showMessageDialog(mainFrame, "您已经下线，请退出后重新登录！", "Eroor", JOptionPane.ERROR_MESSAGE);
+					
 				}
 				else {
 					ClientMsgUtil.sendMsg(ChatMainFrame.getSocket(), new DataPackage(type, sendId, receiveId, message));
@@ -277,14 +280,14 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 	private void closeButtonAction() {
 		if (JOptionPane.showConfirmDialog(this, "Sure to close chat frame?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 			this.setVisible(false);
-			ChatUserFramePool.delChatFrame(friend.getAccount());
+			ChatGroupFramePool.delChatFrame(userInGroup.getId());
 			dispose();
 		}
 	}
 	
 	public void receiveMsg(DataPackage dataPackage, Timestamp timestamp) {
 		//改变文字在ta中的格式
-		String user_time = dataPackage.getSendId() + " [" + friend.getAttach() +"] " + timestamp;
+		String user_time = dataPackage.getSendId() + " [" + userInGroup.getAttach() +"] " + timestamp;
 		
 		String content = "    " + dataPackage.getContent();
 		insert(new FontAttribute(FontAttribute.RECEIVER_TIME_ATTRIBUTE), user_time);
@@ -294,6 +297,35 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 	private void changeSendTextPane() {
 		sendTextPane.setParagraphAttributes(this.fontAttribute.getAttrSet(), true);
 	}
+
+	/**
+	 * @return the mainFrame
+	 */
+	public ChatMainFrame getMainFrame() {
+		return mainFrame;
+	}
+
+	/**
+	 * @param mainFrame the mainFrame to set
+	 */
+	public void setMainFrame(ChatMainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+
+	/**
+	 * @return the userInGroup
+	 */
+	public UserInGroup getUserInGroup() {
+		return userInGroup;
+	}
+
+	/**
+	 * @param userInGroup the userInGroup to set
+	 */
+	public void setUserInGroup(UserInGroup userInGroup) {
+		this.userInGroup = userInGroup;
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -374,30 +406,6 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 	public void windowOpened(WindowEvent e) {
 		// TODO Auto-generated method stub
 		
-	}
-	/**
-	 * @return the user
-	 */
-	public User getUser() {
-		return user;
-	}
-	/**
-	 * @param user the user to set
-	 */
-	public void setUser(User user) {
-		this.user = user;
-	}
-	/**
-	 * @return the friend
-	 */
-	public Friend getFriend() {
-		return friend;
-	}
-	/**
-	 * @param friend the friend to set
-	 */
-	public void setFriend(Friend friend) {
-		this.friend = friend;
 	}
 	
 }

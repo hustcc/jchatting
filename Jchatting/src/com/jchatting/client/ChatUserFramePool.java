@@ -13,7 +13,7 @@ import com.jchatting.client.ui.ChatUserFrame;
  * @author Xewee.Zhiwei.Wang
  * @version 2011-9-28 下午09:36:39
  */
-public class ChatFramePool {
+public class ChatUserFramePool {
 
 	private static Map<String, ChatUserFrame> chatPool = new HashMap<String, ChatUserFrame>();
 	

@@ -29,6 +29,7 @@ public class Group implements Serializable, Cloneable {
 	private Timestamp createtime;
 	private String info;
 	private String memo;
+	
 	public int getId() {
 		return id;
 	}
@@ -59,10 +60,4 @@ public class Group implements Serializable, Cloneable {
 	public void setMemo(String memo) {
 		this.memo = memo;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	
-	
-	
 }

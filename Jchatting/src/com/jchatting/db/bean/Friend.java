@@ -42,7 +42,23 @@ public class Friend implements Cloneable, Serializable {
 	public Friend() {
 		// TODO Auto-generated constructor stub
 	}
-
+	public Friend(User user, String attach, String userUserMemo, String offLineMsgNum) {
+		this.id = user.getId();
+		this.account = user.getAccount();
+		this.password = user.getPassword();
+		this.sex = user.getSex();
+		this.name = user.getName();
+		this.email = user.getEmail();
+		this.validated = user.isValidated();
+		this.online = user.isOnline();
+		this.forbidden = user.isForbidden();
+		this.regtime = user.getRegtime();
+		this.info = user.getInfo();
+		this.userMemo = user.getMemo();
+		
+		this.userUserMemo = userUserMemo;
+		this.offLineMsgNum = offLineMsgNum;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

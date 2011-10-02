@@ -29,4 +29,5 @@ public interface FriendDao {
 	 * @return
 	 */
 	public Map<String, Friend> getAllFriendMapByAccount(String account);
+	
 }
