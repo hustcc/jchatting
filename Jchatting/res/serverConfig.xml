@@ -1,0 +1,6 @@
+<config>
+	<!-- 60 second outline message -->
+	<port>1234</port>
+	<time>60</time>
+	<maxThread>100</maxThread>>
+</config>

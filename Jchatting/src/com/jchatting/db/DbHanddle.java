@@ -1,0 +1,159 @@
+/**
+ * 
+ */
+package com.jchatting.db;
+
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Map;
+import java.util.Vector;
+
+import com.jchatting.client.LoginResult;
+import com.jchatting.db.bean.Friend;
+import com.jchatting.db.bean.User;
+import com.jchatting.db.bean.UserMessage;
+import com.jchatting.db.dao.impl.FriendImpl;
+import com.jchatting.db.dao.impl.UserImpl;
+import com.jchatting.db.dao.impl.UserMessageImpl;
+import com.jchatting.pack.DataPackage;
+
+/**
+ * @author Xewee.Zhiwei.Wang
+ * @version 2011-9-24 下午07:07:31
+ */
+public class DbHanddle {
+
+	public int registeUser(User user) {
+		return new UserImpl().insert(user);
+	}
+	
+	public int setUserOnline(String account, boolean online) {
+		return new UserImpl().setOnline(account, online);
+	}
+	/**
+	 * 删除一个帐号对另一个帐号的离线消息
+	 * 
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-9-29 下午08:00:06
+	 * @param sendAccount
+	 * @param receiveAccount
+	 * @return
+	 */
+	public boolean delMsgByAccount(String sendAccount, String receiveAccount) {
+		return new UserMessageImpl().delMsgByAccount(sendAccount,
+				receiveAccount);
+	}
+	/**
+	 * 获得某一个帐号对一个帐号的离线消息
+	 * 
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-9-29 下午07:59:17
+	 * @param sendAccount
+	 * @param receiveAccount
+	 * @return
+	 */
+	public Vector<UserMessage> getMsgByAccount(String sendAccount,
+			String receiveAccount) {
+		return new UserMessageImpl().findAllMsgByAccount(sendAccount,
+				receiveAccount);
+	}
+	/**
+	 * 保存用户离线消息
+	 * 
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-9-29 下午04:43:59
+	 * @param dataPackage
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean insertOfflineMsg(DataPackage dataPackage) {
+		UserMessage message = new UserMessage();
+		message.setSendAccount(dataPackage.getSendId());
+		message.setReceiveAccount(dataPackage.getReceiveId());
+		message.setContent(dataPackage.getContent());
+		message.setMemo("");
+		message.setSendTime(new Timestamp(System.currentTimeMillis()));
+		message.setRead(false);
+
+		return new UserMessageImpl().insertMessage(message);
+	}
+
+	/**
+	 * 获得某一个账户的所有好友
+	 * 
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-9-26 下午01:47:39
+	 * @param account
+	 * @return
+	 */
+	public Vector<Friend> getFriendList(String account) {
+		return new FriendImpl().getAllFriendListByAccount(account);
+	}
+	/**
+	 * 获得某一个账户的所有好友
+	 * 
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-9-30 下午07:33:23
+	 * @param account
+	 * @return
+	 */
+	public Map<String, Friend> getFriendMap(String account) {
+		return new FriendImpl().getAllFriendMapByAccount(account);
+	}
+
+	// 用户账号被禁用
+	public static final int USER_FORBIDDEN = -1;
+	// 用户还没有通过审核
+	public static final int USER_NOT_VALIDATED = -2;
+	// 用户在线
+	public static final int USER_ONLINE = 0;
+	// 登录成功
+	public static final int USER_LOGIN_SUCCESS = 1;
+	// 登录失败，帐号密码不匹配
+	public static final int USER_LOGIN_FAIL = -3;
+	// 读数据库出错
+	public static final int USER_LOGIN_ERROR = -4;
+	/**
+	 * 
+	 * 用户登录，根据不同的情况返回不同的值
+	 * 
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-9-25 下午04:04:00
+	 * @param account
+	 * @param password
+	 * @return
+	 */
+	public static LoginResult login(String account, String password) {
+		LoginResult result = new LoginResult();
+		User user = new UserImpl().findByAccount(account);
+		result.setUser(user);
+		System.out.println(user.getAccount());
+		System.out.println(user.getPassword());
+		if (user == null) {
+			result.setReturnValue(USER_LOGIN_FAIL);
+			return result;
+		}
+
+		else {
+			if (user.getAccount().equals(account)
+					&& user.getPassword().equals(password)) {
+				if (user.isForbidden()) {
+					result.setReturnValue(USER_FORBIDDEN);
+					return result;
+				}
+				else if (!user.isValidated()) {
+					result.setReturnValue(USER_NOT_VALIDATED);
+					return result;
+				}
+				else if (user.isOnline()) {
+					result.setReturnValue(USER_ONLINE);
+					return result;
+				}
+				result.setReturnValue(USER_LOGIN_SUCCESS);
+				return result;
+			}
+			result.setReturnValue(USER_LOGIN_FAIL);
+			return result;
+		}
+	}
+}
