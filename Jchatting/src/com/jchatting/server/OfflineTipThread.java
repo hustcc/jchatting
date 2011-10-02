@@ -39,9 +39,12 @@ private String account;
 		String key;
 		while (keyIterator.hasNext()) {
 			key = keyIterator.next();
-			System.out.println("noticed offline to :" + key);
 			try {
-				ServerMsgUtil.sendMsg(DataPackage.CLIENT_OFF, account, key, "");
+				if (ClientPool.getClient(key) != null) {
+					System.out.println("noticed offline to :" + key);
+					ServerMsgUtil.sendMsg(DataPackage.CLIENT_OFF, account, key, "");
+				}
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -40,7 +40,9 @@ public class OnlineTipThread extends Thread {
 		while (keyIterator.hasNext()) {
 			key = keyIterator.next();
 			try {
-				ServerMsgUtil.sendMsg(DataPackage.CLIENT_ON, account, key, "");
+				if (ClientPool.getClient(key) != null) {
+					ServerMsgUtil.sendMsg(DataPackage.CLIENT_ON, account, key, "");
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

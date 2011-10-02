@@ -76,11 +76,13 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 	
 	private JPopupMenu grouPopupMenu;
 	private JMenuItem chatGroupItem;
+	private JMenuItem createGroupItem;
 	private JMenuItem enterGroupItem;
 	private JMenuItem quitGroupItem;
 	private JMenuItem groupInfoItem;
 	
 	private JPopupMenu grouPopupMenu_1;
+	private JMenuItem createGroupItem_1;
 	private JMenuItem enterGroupItem_1;
 	
 	
@@ -162,24 +164,31 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 		
 		grouPopupMenu = new JPopupMenu();
 		chatGroupItem = new JMenuItem("Chat In Group");
+		createGroupItem = new JMenuItem("Create Group");
 		enterGroupItem = new JMenuItem("Enter Group");
 		quitGroupItem = new JMenuItem("Quit The Group");
 		groupInfoItem = new JMenuItem("Group Info");
 		chatGroupItem.addActionListener(this);
+		createGroupItem.addActionListener(this);
 		enterGroupItem.addActionListener(this);
 		quitGroupItem.addActionListener(this);
 		groupInfoItem.addActionListener(this);
 		grouPopupMenu.add(chatGroupItem);
 		grouPopupMenu.addSeparator();
+		grouPopupMenu.add(createGroupItem);
 		grouPopupMenu.add(enterGroupItem);
 		grouPopupMenu.add(quitGroupItem);
 		grouPopupMenu.addSeparator();
 		grouPopupMenu.add(groupInfoItem);
 		
 		grouPopupMenu_1 = new JPopupMenu();
+		createGroupItem_1 = new JMenuItem("Create Group");
 		enterGroupItem_1 = new JMenuItem("Enter Group");
 		enterGroupItem_1.addActionListener(this);
+		createGroupItem_1.addActionListener(this);
+		grouPopupMenu_1.add(createGroupItem);
 		grouPopupMenu_1.add(enterGroupItem_1);
+		
 		
 		
 		connectServerBySocket();
@@ -342,6 +351,11 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 		else if (source == chatGroupItem) {
 			//todo
 			System.out.println("fchatGroupItem");
+			JOptionPane.showMessageDialog(this, "not supply!");
+		}
+		else if (source == createGroupItem || source == createGroupItem_1) {
+			//todo
+			System.out.println("createGroupItem");
 			JOptionPane.showMessageDialog(this, "not supply!");
 		}
 		else if (source == enterGroupItem || source == enterGroupItem_1) {
