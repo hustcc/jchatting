@@ -22,6 +22,11 @@ import com.jchatting.db.persistent.DbPoolUtil;
  */
 public class UserInGroupImpl implements UserInGroupDao {
 
+	public final static int GROUP_NOT_EXIST = -104;
+	public final static int GROUP_EXIST = -105;
+	public final static int USER_IN_GROUP = -106;
+	public final static int ADD_USER_TO_GROUP_SUCCESS = 1;
+	public final static int ADD_USER_TO_GROUP_ERROR = -1;
 	/**
 	 * 
 	 */
@@ -29,6 +34,33 @@ public class UserInGroupImpl implements UserInGroupDao {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * 用户退群
+	 *TODO当一个群的人数为0时，删除群
+	 * 
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午09:34:54
+	 * @param user
+	 * @param userInGroup
+	 * @return
+	 */
+	public boolean quitGroup(User user, UserInGroup userInGroup) {
+		String sql = "delete from user_group where account = (?) and group_id = (?);";
+		Connection connection = DbPoolUtil.getInstance().getConnection();
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, user.getAccount());
+			preparedStatement.setString(2, userInGroup.getId());
+			return preparedStatement.executeUpdate() > 0;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			return false;
+		} finally {
+			closeAll(connection);
+		}
+		
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.jchatting.db.dao.UserInGroupDao#findAllGroupOfUser(com.jchatting.db.bean.User)
 	 */
@@ -103,6 +135,46 @@ public class UserInGroupImpl implements UserInGroupDao {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	@Override
+	public int addUserIntoGroup(User user, String groupId) {
+		// TODO Auto-generated method stub
+		String sql_query1 = "select id from groups where id = (?);";
+		String sql_query2 = "select id from user_group where account = (?) and group_id = (?);";
+		String sql_insert = "insert into user_group(account, group_id, attach, memo) values (?, ?, ?, ?);";
+		Connection connection = DbPoolUtil.getInstance().getConnection();
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(sql_query1);
+			preparedStatement.setString(1, groupId);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (! resultSet.next()) {
+				return GROUP_NOT_EXIST;
+			}
+			
+			preparedStatement = connection.prepareStatement(sql_query2);
+			preparedStatement.setString(1, user.getAccount());
+			preparedStatement.setString(2, groupId);
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				return USER_IN_GROUP;
+			}
+			
+			preparedStatement = connection.prepareStatement(sql_insert);
+			preparedStatement.setString(1, user.getAccount());
+			preparedStatement.setString(2, groupId);
+			preparedStatement.setString(3, "");
+			preparedStatement.setString(4, "");
+			
+			preparedStatement.execute();
+			return ADD_USER_TO_GROUP_SUCCESS;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			return ADD_USER_TO_GROUP_ERROR;
+		} finally {
+			closeAll(connection);
 		}
 	}
 

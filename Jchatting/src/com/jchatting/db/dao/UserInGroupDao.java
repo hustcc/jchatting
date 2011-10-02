@@ -15,4 +15,5 @@ import com.jchatting.db.bean.UserInGroup;
 public interface UserInGroupDao {
 
 	public Map<String, UserInGroup> findAllGroupOfUser(User user);
+	public int addUserIntoGroup(User user, String groupId);
 }

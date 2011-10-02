@@ -11,11 +11,13 @@ import java.util.Vector;
 
 import com.jchatting.client.LoginResult;
 import com.jchatting.db.bean.Friend;
+import com.jchatting.db.bean.Group;
 import com.jchatting.db.bean.User;
 import com.jchatting.db.bean.UserInGroup;
 import com.jchatting.db.bean.UserMessage;
 import com.jchatting.db.bean.UserUser;
 import com.jchatting.db.dao.impl.FriendImpl;
+import com.jchatting.db.dao.impl.GroupImpl;
 import com.jchatting.db.dao.impl.UserImpl;
 import com.jchatting.db.dao.impl.UserInGroupImpl;
 import com.jchatting.db.dao.impl.UserMessageImpl;
@@ -27,7 +29,55 @@ import com.jchatting.pack.DataPackage;
  * @version 2011-9-24 下午07:07:31
  */
 public class DbHanddle {
-	
+	/**
+	 * 退出群
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午09:30:29
+	 * @param user
+	 * @param userInGroup
+	 * @return
+	 */
+	public boolean quitOutGroup(User user, UserInGroup userInGroup) {
+		return new UserInGroupImpl().quitGroup(user, userInGroup);
+	}
+	/**
+	 * 创建群，返回群的id
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午09:17:00
+	 * @param group
+	 * @return
+	 */
+	public int createGroup(Group group) {
+		return new GroupImpl().insert(group);
+	}
+	/**
+	 * 通过群号得到群的所有信息
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午09:09:56
+	 * @param groupId
+	 * @return
+	 */
+	public Group getGroupById(String groupId) {
+		return new GroupImpl().findById(groupId);
+	}
+	/**
+	 * 处理用户加群请求
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午08:56:54
+	 * @param user
+	 * @param groupId
+	 * @return
+	 */
+	public int addUserIntoGroup(User user, String groupId) {
+		return new UserInGroupImpl().addUserIntoGroup(user, groupId);
+	}
+	/**
+	 * 获得一个群中的所有用户的id
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-2 下午08:47:54
+	 * @param groupId
+	 * @return
+	 */
 	public ArrayList<String> getAllUserAccountInGroup(String groupId) {
 		return new UserInGroupImpl().findAllUserInGroup(groupId);
 	}

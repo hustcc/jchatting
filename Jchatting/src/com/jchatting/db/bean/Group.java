@@ -30,6 +30,18 @@ public class Group implements Serializable, Cloneable {
 	private String info;
 	private String memo;
 	
+	public Group() {
+		super();
+	}
+	public Group(int id, String name, Timestamp createtime, String info,
+			String memo) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.createtime = createtime;
+		this.info = info;
+		this.memo = memo;
+	}
 	public int getId() {
 		return id;
 	}

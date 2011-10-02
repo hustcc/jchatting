@@ -84,7 +84,7 @@ public class ClientThread extends Thread {
 		friend.setOnline(online);
 		friendMap.put(account, friend);
 		
-		mainFrame.reConstractTree(friendMap);
+		mainFrame.reConstractUserTree(friendMap);
 		
 	}
 	/**

@@ -51,6 +51,8 @@ public class ChatGroupFrame extends JFrame implements ActionListener, WindowList
 	private StyledDocument document;
 	
 	private JSplitPane splitPane;
+	private JScrollPane northScrollPane;
+	private JScrollPane southScrollPane;
 	private JTextPane receiveTextPane;
 	
 	private JToggleButton bTogButton;
@@ -92,7 +94,7 @@ public class ChatGroupFrame extends JFrame implements ActionListener, WindowList
 				
 		receiveTextPane = new JTextPane();
 		receiveTextPane.setEditable(false);
-		JScrollPane northScrollPane = new JScrollPane();
+		northScrollPane = new JScrollPane();
 		northScrollPane.setViewportView(receiveTextPane);
 		splitPane.setLeftComponent(northScrollPane);
 		
@@ -139,7 +141,7 @@ public class ChatGroupFrame extends JFrame implements ActionListener, WindowList
 		this.backColor = backColorButton.getBackground();
 		
 		sendTextPane = new JTextPane();
-		JScrollPane southScrollPane = new JScrollPane();
+		southScrollPane = new JScrollPane();
 		southScrollPane.setViewportView(sendTextPane);
 		panel.add(southScrollPane, BorderLayout.CENTER);
 		
@@ -185,6 +187,9 @@ public class ChatGroupFrame extends JFrame implements ActionListener, WindowList
 			}
 		});
 		
+		sendTextPane.setCaretPosition(sendTextPane.getText().length());
+		receiveTextPane.setCaretPosition(receiveTextPane.getText().length());
+		
 		document = receiveTextPane.getStyledDocument();
 		
 		
@@ -215,6 +220,8 @@ public class ChatGroupFrame extends JFrame implements ActionListener, WindowList
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
+		receiveTextPane.setCaretPosition(receiveTextPane.getDocument().getLength());
+//		northScrollPane.getVerticalScrollBar().setValue(northScrollPane.getVerticalScrollBar().getMaximum());
 	}
 //	private void delOfflineMsg() {
 //		new DbHanddle().delMsgByAccount(friend.getAccount(), user.getAccount());

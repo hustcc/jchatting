@@ -53,6 +53,8 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 	private StyledDocument document;
 	
 	private JSplitPane splitPane;
+	private JScrollPane northScrollPane;
+	private JScrollPane southScrollPane;
 	private JTextPane receiveTextPane;
 	
 	private JToggleButton bTogButton;
@@ -91,8 +93,9 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 				
 		receiveTextPane = new JTextPane();
 		receiveTextPane.setEditable(false);
-		JScrollPane northScrollPane = new JScrollPane();
+		northScrollPane = new JScrollPane();
 		northScrollPane.setViewportView(receiveTextPane);
+		
 		splitPane.setLeftComponent(northScrollPane);
 		
 		JPanel panel = new JPanel();
@@ -138,7 +141,7 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 		this.backColor = backColorButton.getBackground();
 		
 		sendTextPane = new JTextPane();
-		JScrollPane southScrollPane = new JScrollPane();
+		southScrollPane = new JScrollPane();
 		southScrollPane.setViewportView(sendTextPane);
 		panel.add(southScrollPane, BorderLayout.CENTER);
 		
@@ -213,6 +216,8 @@ public class ChatUserFrame extends JFrame implements ActionListener, WindowListe
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
+//		northScrollPane.getVerticalScrollBar().setValue(northScrollPane.getVerticalScrollBar().getMaximum());
+		receiveTextPane.setCaretPosition(receiveTextPane.getDocument().getLength());
 	}
 	private void delOfflineMsg() {
 		new DbHanddle().delMsgByAccount(friend.getAccount(), user.getAccount());
