@@ -1,2 +1,0 @@
-serviceClass: com.jchatting.client.GreetingService
-path: 41879BAF99CD3CF37AC7CEBC61358C52.gwt.rpc
