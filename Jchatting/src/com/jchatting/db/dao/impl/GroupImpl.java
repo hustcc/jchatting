@@ -83,5 +83,22 @@ public class GroupImpl implements GroupDao {
 		}
 		return -1;
 	}
+	@Override
+	public boolean delete(String groupId) {
+		// TODO Auto-generated method stub
+		String sql = "delete from groups where id = (?);";
+		Connection connection = DbPoolUtil.getInstance().getConnection();
+		
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, groupId);
+			return preparedStatement.executeUpdate() > 0;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			return false;
+		} finally {
+			closeAll(connection);
+		}
+	}
 
 }

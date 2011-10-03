@@ -51,7 +51,10 @@ public class UserInGroupImpl implements UserInGroupDao {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setString(1, user.getAccount());
 			preparedStatement.setString(2, userInGroup.getId());
-			return preparedStatement.executeUpdate() > 0;
+			
+			preparedStatement.executeUpdate();
+			
+			return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			return false;
@@ -173,6 +176,29 @@ public class UserInGroupImpl implements UserInGroupDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			return ADD_USER_TO_GROUP_ERROR;
+		} finally {
+			closeAll(connection);
+		}
+	}
+
+	@Override
+	public int getGroupUserCount(String groupId) {
+		String sql = "select COUNT(id) as num from user_group where group_id = (?);";
+		Connection connection = DbPoolUtil.getInstance().getConnection();
+		
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, groupId);
+			
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			while (resultSet.next()) {
+				return resultSet.getInt("num");
+			}
+			return 0;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			return -1;
 		} finally {
 			closeAll(connection);
 		}

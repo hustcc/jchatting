@@ -12,4 +12,5 @@ import com.jchatting.db.bean.Group;
 public interface GroupDao {
 	public Group findById(String groupId);
 	public int insert(Group group);
+	public boolean delete(String groupId);
 }

@@ -8,6 +8,8 @@
 ChatMainFrame.reConstractTree和ChatMainFrame.constractTree效率态度，应该正对某一个节点进行修改
 传送文件
 
+为了安全性:客户端连接数据库的参数、连接ip和端口由服务器发送，其中数据库连接参数不写配置文件，每次由服务器得到，
+ip和port每次发送之后写如配置文件，客户端每次启动读配置文件
 
 
 

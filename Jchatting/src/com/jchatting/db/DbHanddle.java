@@ -38,7 +38,14 @@ public class DbHanddle {
 	 * @return
 	 */
 	public boolean quitOutGroup(User user, UserInGroup userInGroup) {
-		return new UserInGroupImpl().quitGroup(user, userInGroup);
+		UserInGroupImpl userInGroupImpl = new UserInGroupImpl();
+		if (userInGroupImpl.quitGroup(user, userInGroup)) {
+			if (userInGroupImpl.getGroupUserCount(userInGroup.getId()) == 0) {
+				new GroupImpl().delete(userInGroup.getId());
+			}
+			return true;
+		}
+		return false;
 	}
 	/**
 	 * 创建群，返回群的id

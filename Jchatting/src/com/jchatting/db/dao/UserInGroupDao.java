@@ -16,4 +16,12 @@ public interface UserInGroupDao {
 
 	public Map<String, UserInGroup> findAllGroupOfUser(User user);
 	public int addUserIntoGroup(User user, String groupId);
+	/**
+	 * 得到某一个群中的用户数目
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-3 下午12:59:29
+	 * @param groupId
+	 * @return
+	 */
+	public int getGroupUserCount(String groupId);
 }
