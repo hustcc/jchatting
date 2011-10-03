@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jchatting.client;
+package com.jchatting.client.util;
 
 import java.util.HashMap;
 import java.util.Iterator;

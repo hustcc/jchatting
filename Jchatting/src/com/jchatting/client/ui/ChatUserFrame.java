@@ -28,9 +28,9 @@ import javax.swing.JToggleButton;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import com.jchatting.client.ChatUserFramePool;
-import com.jchatting.client.ClientMsgUtil;
 import com.jchatting.client.ui.ex.FontAttribute;
+import com.jchatting.client.util.ChatUserFramePool;
+import com.jchatting.client.util.ClientMsgUtil;
 import com.jchatting.db.DbHanddle;
 import com.jchatting.db.bean.Friend;
 import com.jchatting.db.bean.User;

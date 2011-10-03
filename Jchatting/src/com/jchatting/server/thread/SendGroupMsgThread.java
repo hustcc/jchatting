@@ -1,13 +1,15 @@
 /**
  * 
  */
-package com.jchatting.server;
+package com.jchatting.server.thread;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import com.jchatting.db.DbHanddle;
 import com.jchatting.pack.DataPackage;
+import com.jchatting.server.util.ClientPool;
+import com.jchatting.server.util.ServerMsgUtil;
 
 /**
  * @author Xewee.Zhiwei.Wang

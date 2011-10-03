@@ -16,15 +16,31 @@ public class DataPackage implements Cloneable, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static final int OTHER = 0;
+	/**
+	 * 由服务器发送给客户端的配置信息
+	 */
+	public static final int CONFIG = 0;
+	/**
+	 * 好友之间的消息
+	 */
 	public static final int USER = 1;
+	/**
+	 * 群消息
+	 */
 	public static final int GROUP = 2;
+	/**
+	 * 由系统发送的广告信息
+	 */
 	public static final int SYSTEM = 3;
-	//只有在client第一个上线时使用，表示该用户已经登录
+	/**
+	 * 用户上线提醒信息
+	 */
 	public static final int CLIENT_ON = 4;
+	/**用户下线是提醒
+	 * 
+	 */
 	public static final int CLIENT_OFF = 5;
-	public static final int ON_OFF = 6;
-//	public static final int SERVER_TWO_ONLINE = 5;
+//	public static final int ON_OFF = 6;
 	private int type;
 	private String sendId;
 	private String receiveId;

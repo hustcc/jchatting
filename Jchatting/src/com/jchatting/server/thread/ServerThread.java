@@ -1,12 +1,14 @@
 /**
  * 
  */
-package com.jchatting.server;
+package com.jchatting.server.thread;
 
 import java.io.IOException;
 
 import com.jchatting.db.DbHanddle;
 import com.jchatting.pack.DataPackage;
+import com.jchatting.server.util.ClientPool;
+import com.jchatting.server.util.ServerMsgUtil;
 import com.jchatting.util.PackageUtil;
 
 /**
@@ -50,7 +52,8 @@ public class ServerThread extends Thread {
 				ClientPool.removeClient(account);
 				new DbHanddle().setUserOnline(account, false);
 				new OfflineTipThread(account).start();
-				Thread.interrupted();
+//				Thread.interrupted();
+//				break;
 				return;
 			}
 		}

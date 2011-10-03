@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 
-import com.jchatting.client.LoginResult;
+import com.jchatting.client.util.LoginResult;
 import com.jchatting.db.bean.Friend;
 import com.jchatting.db.bean.Group;
 import com.jchatting.db.bean.User;
@@ -250,7 +250,7 @@ public class DbHanddle {
 	 * @param password
 	 * @return
 	 */
-	public static LoginResult login(String account, String password) {
+	public LoginResult login(String account, String password) {
 		LoginResult result = new LoginResult();
 		User user = new UserImpl().findByAccount(account);
 		result.setUser(user);

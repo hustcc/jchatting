@@ -13,12 +13,17 @@ public class ServerConfig {
 
 	private static ServerConfig instance;
 	
+	private String ip;
 	//监听端口
 	private int port;
 	//群离线消息保留时间
 	private int offlineTime;
 	//最大线程数
 	private int maxThread;
+	private String ipConfig;
+	//扫描发送配置信息的端口
+	private int portConfig;
+	
 	
 	
 	public synchronized static ServerConfig instance() {
@@ -63,6 +68,48 @@ public class ServerConfig {
 	 */
 	public void setMaxThread(int maxThread) {
 		this.maxThread = maxThread;
+	}
+
+	/**
+	 * @return the portConfig
+	 */
+	public int getPortConfig() {
+		return portConfig;
+	}
+
+	/**
+	 * @param portConfig the portConfig to set
+	 */
+	public void setPortConfig(int portConfig) {
+		this.portConfig = portConfig;
+	}
+
+	/**
+	 * @return the ip
+	 */
+	public String getIp() {
+		return ip;
+	}
+
+	/**
+	 * @param ip the ip to set
+	 */
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	/**
+	 * @return the ipConfig
+	 */
+	public String getIpConfig() {
+		return ipConfig;
+	}
+
+	/**
+	 * @param ipConfig the ipConfig to set
+	 */
+	public void setIpConfig(String ipConfig) {
+		this.ipConfig = ipConfig;
 	}
 
 	

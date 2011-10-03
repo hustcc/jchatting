@@ -25,11 +25,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.jchatting.client.ChatGroupFramePool;
-import com.jchatting.client.ChatUserFramePool;
-import com.jchatting.client.ClientMsgUtil;
-import com.jchatting.client.ClientThread;
 import com.jchatting.client.config.ClientConfig;
+import com.jchatting.client.thread.ClientThread;
+import com.jchatting.client.util.ChatGroupFramePool;
+import com.jchatting.client.util.ChatUserFramePool;
+import com.jchatting.client.util.ClientMsgUtil;
 import com.jchatting.db.DbHanddle;
 import com.jchatting.db.bean.Friend;
 import com.jchatting.db.bean.Group;

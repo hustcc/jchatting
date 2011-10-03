@@ -23,20 +23,24 @@ public class ConfigXmlParse {
 	public final static String SERVER_CONFIG_FILE = "res/serverConfig.xml";
 	public final static String CLIENT_CONFIG_FLE = "res/clientConfig.xml";
 	
-	public static ClientConfig parseClientXml() {
-		ClientConfig config = new ClientConfig();
+	public static boolean saveClientXml() {
+		
+		return true;
+	}
+	
+	public static ClientConfig parseClientXml(ClientConfig config) {
 		SAXReader reader=new SAXReader();
 		try {
 			Document document = reader.read(new FileInputStream(CLIENT_CONFIG_FLE));
 			
 			Element root = document.getRootElement();
 			Element ipElement = root.element("ip");
-			config.setIp(ipElement.getText());
+			config.setIpConfig(ipElement.getText());
 			Element portElement = root.element("port");
 			try {
-				config.setPort(Integer.valueOf(portElement.getText()));
+				config.setPortConfig(Integer.valueOf(portElement.getText()));
 			} catch (NumberFormatException e) {
-				config.setPort(1234);
+				config.setPort(1235);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -59,29 +63,40 @@ public class ConfigXmlParse {
 			Document document = reader.read(new FileInputStream(SERVER_CONFIG_FILE));
 			
 			Element root = document.getRootElement();
+			Element ipElement = root.element("ip");
+			config.setIp(ipElement.getText());
 			Element portElement = root.element("port");
 			config.setPort(Integer.valueOf(portElement.getText()));
 			Element timeElement = root.element("time");
 			config.setOfflineTime(Integer.valueOf(timeElement.getText()));
 			Element maxThreadElement = root.element("maxThread");
 			config.setMaxThread(Integer.valueOf(maxThreadElement.getText()));
+			Element ipConfigElement = root.element("ipConfig");
+			config.setIpConfig(ipConfigElement.getText());
+			Element portConfigElement = root.element("portConfig");
+			config.setPortConfig(Integer.valueOf(portConfigElement.getText()));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			System.out.println("dbconfig.xml文件未找到！");
+			config.setIp("127.0.0.1");
+			config.setIpConfig("127.0.0.1");
 			config.setPort(1234);
 			config.setOfflineTime(60);
 			config.setMaxThread(100);
+			config.setPort(1235);
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			System.out.println("dbconfig.xml文件解析发生错误！");
 			config.setPort(1234);
 			config.setOfflineTime(60);
 			config.setMaxThread(100);
+			config.setPort(1235);
 		} catch (NumberFormatException e) {
 			System.out.println("dbconfig.xml解析中数据格式转换错误！");
 			config.setPort(1234);
 			config.setOfflineTime(60);
 			config.setMaxThread(100);
+			config.setPort(1235);
 		}
 		return config;
 	}

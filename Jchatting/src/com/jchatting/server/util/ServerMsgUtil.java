@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jchatting.server;
+package com.jchatting.server.util;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

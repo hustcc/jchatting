@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jchatting.server;
+package com.jchatting.server.thread;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -10,6 +10,8 @@ import java.util.Map;
 import com.jchatting.db.DbHanddle;
 import com.jchatting.db.bean.Friend;
 import com.jchatting.pack.DataPackage;
+import com.jchatting.server.util.ClientPool;
+import com.jchatting.server.util.ServerMsgUtil;
 
 /**
  * @author Xewee.Zhiwei.Wang

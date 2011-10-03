@@ -1,7 +1,6 @@
 package com.jchatting.client.ui;
 
 import java.awt.Cursor;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
-import com.jchatting.client.LoginResult;
+import com.jchatting.client.util.LoginResult;
 import com.jchatting.db.DbHanddle;
 
 public class LoginFrame extends JFrame implements ActionListener, MouseListener, Action {
@@ -94,22 +93,6 @@ public class LoginFrame extends JFrame implements ActionListener, MouseListener,
 //		passwordField.setText("wzwahl36");
 		
 	}
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LoginFrame frame = new LoginFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	private void loginSuccess(LoginResult result) {
 		new DbHanddle().setUserOnline(result.getUser().getAccount(), true);
@@ -122,8 +105,8 @@ public class LoginFrame extends JFrame implements ActionListener, MouseListener,
 		// TODO Auto-generated method stub
 		Object source = e.getSource();
 		if (source == loginButton) {
-			System.out.println("d"+accountTextField.getText());
-			LoginResult result = DbHanddle.login(accountTextField.getText(), String.valueOf(passwordField.getPassword()));
+			
+			LoginResult result = new DbHanddle().login(accountTextField.getText(), String.valueOf(passwordField.getPassword()));
 			System.out.println(result);
 			switch (result.getReturnValue()) {
 				case DbHanddle.USER_FORBIDDEN :

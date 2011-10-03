@@ -1,14 +1,15 @@
 /**
  * 
  */
-package com.jchatting.server;
+package com.jchatting.server.thread;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.jchatting.server.config.ServerConfig;
+import com.jchatting.server.util.Client;
+import com.jchatting.server.util.ClientPool;
 import com.jchatting.util.PackageUtil;
 
 /**
@@ -35,7 +36,7 @@ public class Server {
 		this.port = port;
 		serverSocket = new ServerSocket(this.port);
 		while (true) {
-			System.out.println("开始监听端口：" + this.port);
+			System.out.println("开始监听客户端端口：" + this.port);
 			Socket socket = serverSocket.accept();
 			System.out.println(socket.getInetAddress() + "客户端连接！");
 
@@ -50,31 +51,18 @@ public class Server {
 				ClientPool.removeClient(userId);
 			}
 			// try {
-			System.out.println("socket==null : " + socket == null);
 			ClientPool.addClient(new Client(userId, socket));
 			new ServerThread(userId).start();
+			//提醒他的好友已登录
+			new OnlineTipThread(userId).start();
 			System.out.println("存在的客户端数量：" + ClientPool.size());
 			// } catch (OutOfPoolSizeException e) {
 			// // TODO Auto-generated catch block
 			// e.printStackTrace();
 			// socket.close();
 			// }
-			new OnlineTipThread(userId).start();
+			
 		}
 	}
 
-	/**
-	 * @author Xewee.Zhiwei.Wang
-	 * @version 2011-9-24 下午12:28:12
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		try {
-			new Server().listen(ServerConfig.instance().getPort());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

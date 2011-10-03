@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jchatting.client;
+package com.jchatting.client.thread;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -13,6 +13,10 @@ import com.jchatting.client.ui.ChatGroupFrame;
 import com.jchatting.client.ui.ChatMainFrame;
 import com.jchatting.client.ui.ChatUserFrame;
 import com.jchatting.client.ui.LoginFrame;
+import com.jchatting.client.util.ChatGroupFramePool;
+import com.jchatting.client.util.ChatUserFramePool;
+import com.jchatting.client.util.ClientMsgUtil;
+import com.jchatting.db.DbHanddle;
 import com.jchatting.db.bean.Friend;
 import com.jchatting.db.bean.UserInGroup;
 import com.jchatting.pack.DataPackage;
@@ -46,7 +50,7 @@ public class ClientThread extends Thread {
 				forward(dataPackage);
 			}	
 		} catch (IOException e) {
-			twoClientOnline();
+			socketException();
 		}	
 	}
 	/**
@@ -57,12 +61,13 @@ public class ClientThread extends Thread {
 	 * @author Xewee.Zhiwei.Wang
 	 * @version 2011-9-29 下午01:50:17
 	 */
-	private void twoClientOnline() {
+	private void socketException() {
 		try {
-			JOptionPane.showMessageDialog(mainFrame, "您的帐号在其他地方登录，或者网络存在异常！", "Error", JOptionPane.ERROR_MESSAGE);
+			new DbHanddle().setUserOnline(mainFrame.getUser().getAccount(), false);
 			ChatUserFramePool.disposeAllFrame();
 			ChatMainFrame.getSocket().close();
 			ChatMainFrame.setSocket(null);
+			JOptionPane.showMessageDialog(mainFrame, "您的帐号在其他地方登录，或者网络存在异常！", "Error", JOptionPane.ERROR_MESSAGE);
 			mainFrame.setVisible(false);
 			mainFrame.dispose();
 			mainFrame = null;
@@ -148,10 +153,6 @@ public class ClientThread extends Thread {
 					//TODO 2.在主界面显示在消息数
 					
 				}
-				break;
-					
-			case DataPackage.OTHER :
-				//TODO		
 				break;
 			default :
 				//TODO
