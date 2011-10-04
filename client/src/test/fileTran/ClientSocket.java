@@ -1,4 +1,4 @@
-package fileTransfer;
+package test.fileTran;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

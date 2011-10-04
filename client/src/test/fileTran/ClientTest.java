@@ -1,9 +1,11 @@
-package fileTransfer;
+package test.fileTran;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
+
+
 
 public class ClientTest {
 	private ClientSocket cs = null;
