@@ -5,12 +5,18 @@ package com.jchatting.client.config;
 
 import java.awt.Color;
 import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
 import com.jchatting.pack.ConfigPackage;
-import com.jchatting.util.ConfigXmlParse;
 
 
 /**
@@ -20,6 +26,7 @@ import com.jchatting.util.ConfigXmlParse;
 public class ClientConfig {
 
 	public final static String CONFIG_PACKAGE = "cOnFiG";
+	public final static String CLIENT_CONFIG_FLE = "res/clientConfig.xml";
 	
 	private static ClientConfig instance;
 	
@@ -51,9 +58,15 @@ public class ClientConfig {
 		return instance = getConfigFromServer();
 	}
 	
+	/**
+	 * 通过socket得到服务器安全发送的配置信息
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-4 上午10:51:07
+	 * @return
+	 */
 	private static ClientConfig getConfigFromServer() {
 		ClientConfig config = new ClientConfig();
-		config = ConfigXmlParse.parseClientXml(config);
+		config = parseClientXml(config);
 		
 		try {
 			Socket socket = new Socket(config.getIpConfig(), config.getPortConfig());
@@ -92,7 +105,40 @@ public class ClientConfig {
 		
 		return config;
 	}
-	
+	/**
+	 * 获取配置文件中的配置信息
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-4 上午10:50:39
+	 * @param config
+	 * @return
+	 */
+	private static ClientConfig parseClientXml(ClientConfig config) {
+		SAXReader reader=new SAXReader();
+		try {
+			Document document = reader.read(new FileInputStream(CLIENT_CONFIG_FLE));
+			
+			Element root = document.getRootElement();
+			Element ipElement = root.element("ip");
+			config.setIpConfig(ipElement.getText());
+			Element portElement = root.element("port");
+			try {
+				config.setPortConfig(Integer.valueOf(portElement.getText()));
+			} catch (NumberFormatException e) {
+				config.setPort(1235);
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("dbconfig.xml文件未找到！");
+			config.setIp("127.0.0.1");
+			config.setPort(1234);
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			System.out.println("dbconfig.xml文件解析发生错误！");
+			config.setIp("127.0.0.1");
+			config.setPort(1234);
+		}
+		return config;
+	}
 	private ClientConfig() {
 		
 	}
