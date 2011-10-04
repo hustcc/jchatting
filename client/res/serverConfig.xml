@@ -1,0 +1,9 @@
+<config>
+	<!-- 60 second outline message -->
+	<ip>122.205.7.99</ip>
+	<port>1234</port>
+	<time>60</time>
+	<maxThread>100</maxThread>>
+	<ipConfig>122.205.7.99</ipConfig>
+	<portConfig>1235</portConfig>
+</config>
