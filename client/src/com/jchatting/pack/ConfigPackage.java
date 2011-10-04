@@ -92,16 +92,8 @@ public class ConfigPackage implements Cloneable, Serializable {
 			configPackage.setIpConfig(params[6]);
 			configPackage.setPortConfig(params[7]);
 			configPackage.setIp(params[8]);
-			configPackage.setPort(params[9]);
-//			
-//			for (String string : params) {
-//				System.out.println(string);
-//			}
-//			
+			configPackage.setPort(params[9]);		
 			return configPackage;
-		}
-		for (String string : params) {
-			System.out.println(string);
 		}
 		return null;
 		

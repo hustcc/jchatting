@@ -36,11 +36,14 @@ public class DataPackage implements Cloneable, Serializable {
 	 * 用户上线提醒信息
 	 */
 	public static final int CLIENT_ON = 4;
-	/**用户下线是提醒
-	 * 
+	/**
+	 * 用户下线是提醒 
 	 */
 	public static final int CLIENT_OFF = 5;
-//	public static final int ON_OFF = 6;
+	/**
+	 * 发送文件请求
+	 */
+	public static final int FILE_TRANS = 6;
 	private int type;
 	private String sendId;
 	private String receiveId;

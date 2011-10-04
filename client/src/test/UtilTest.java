@@ -9,8 +9,8 @@ public class UtilTest {
 		
 //		DataPackage dataPackage = new DataPackage(1, "wzwahl36", "target", "no content");
 //		System.out.println(PackageUtil.packageData(dataPackage));
-		String aString =  "cOnFiG!@#%&net.sourceforge.jtds.jdbc.Driver!@#%&jdbc:jtds:sqlserver://122.205.7.93:2433;DatabaseName=jchatting!@#%&*sa!@#%&*19870526!@#%&*3000!@#%&*0.0.0.0/0.0.0.0!@#%&*1235!@#%&*0.0.0.0/0.0.0.0!@#%&*1234!@#%&*";
-		String[] slipted = aString.split("!@#%&");
+		String aString = "123a123";
+		String[] slipted = aString.split("a");
 		for (String string : slipted) {
 			System.out.println(string);
 		}

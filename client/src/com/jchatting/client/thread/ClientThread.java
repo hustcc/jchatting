@@ -3,12 +3,15 @@
  */
 package com.jchatting.client.thread;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Map;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import com.jchatting.client.config.FileSocketConfig;
 import com.jchatting.client.ui.ChatGroupFrame;
 import com.jchatting.client.ui.ChatMainFrame;
 import com.jchatting.client.ui.ChatUserFrame;
@@ -105,6 +108,37 @@ public class ClientThread extends Thread {
 		switch (type) {
 			case DataPackage.SYSTEM :
 				//TODO
+				break;
+			case DataPackage.FILE_TRANS :
+//				System.out.println("filetrans:" + dataPackage.getContent());
+				FileSocketConfig fileSocketConfig = FileSocketConfig.valueOf(dataPackage.getContent());
+				if (fileSocketConfig != null) {
+					int clicked = JOptionPane.showConfirmDialog(mainFrame, "Friend [ " + sendId + " ] send file ' " + fileSocketConfig.getFileName() + " ' to you, Receive or not?", "Confimm", JOptionPane.YES_NO_OPTION);
+					if (clicked == JOptionPane.OK_OPTION) {
+						JFileChooser fileChooser = new JFileChooser();
+						fileChooser.setMultiSelectionEnabled(false);
+						fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						
+						if (fileChooser.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+							File fileSavePath = fileChooser.getSelectedFile();
+							if (fileSavePath != null && fileSavePath.isDirectory()) {
+								ChatUserFrame chatUserFrame = ChatUserFramePool.getChatFrame(sendId);
+								if (chatUserFrame == null) {
+									chatUserFrame = new ChatUserFrame(mainFrame, mainFrame.getFriendByAccount(sendId));
+									chatUserFrame.setVisible(true);
+									ChatUserFramePool.addChatFrame(chatUserFrame);
+								}
+								chatUserFrame.receiveFileAction(fileSavePath, fileSocketConfig);
+							}
+							else {
+								JOptionPane.showMessageDialog(mainFrame, "Please choose a folder!");
+							}
+						}
+						
+						
+					}
+				}
+				
 				break;
 			//服务器转发好友上线消息
 			case DataPackage.CLIENT_ON :
