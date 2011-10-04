@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 
-import com.jchatting.client.config.ClientConfig;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class DbPoolUtil {
@@ -20,11 +19,11 @@ public class DbPoolUtil {
 //		connectBean = new DbXmlParseUtil().parseConnectXml();
 		dataSource = new ComboPooledDataSource();
 		// 设置jdbc连接信息
-		dataSource.setUser(ClientConfig.instance().getUser());
-		dataSource.setPassword(ClientConfig.instance().getPassword());
-		dataSource.setJdbcUrl(ClientConfig.instance().getUrl());
+		dataSource.setUser(DbConfig.instance().getUserName());
+		dataSource.setPassword(DbConfig.instance().getPassword());
+		dataSource.setJdbcUrl(DbConfig.instance().getUrl());
 		try {
-			dataSource.setCheckoutTimeout(Integer.valueOf(ClientConfig.instance().getTimeOut()));
+			dataSource.setCheckoutTimeout(Integer.valueOf(DbConfig.instance().getTimeOut()));
 		} catch (NumberFormatException e) {
 			// TODO: handle exception
 			dataSource.setCheckoutTimeout(3000);
@@ -32,7 +31,7 @@ public class DbPoolUtil {
 		
 
 		try {
-			dataSource.setDriverClass(ClientConfig.instance().getDriver());
+			dataSource.setDriverClass(DbConfig.instance().getDriver());
 		} catch (PropertyVetoException e) {
 			System.out.println("数据库驱动加载出错！");
 		}

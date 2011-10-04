@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 
-import com.jchatting.client.util.LoginResult;
 import com.jchatting.db.bean.Friend;
 import com.jchatting.db.bean.Group;
 import com.jchatting.db.bean.User;
@@ -240,47 +239,47 @@ public class DbHanddle {
 	public static final int USER_LOGIN_FAIL = -3;
 	// 读数据库出错
 	public static final int USER_LOGIN_ERROR = -4;
-	/**
-	 * 
-	 * 用户登录，根据不同的情况返回不同的值
-	 * 
-	 * @author Xewee.Zhiwei.Wang
-	 * @version 2011-9-25 下午04:04:00
-	 * @param account
-	 * @param password
-	 * @return
-	 */
-	public LoginResult login(String account, String password) {
-		LoginResult result = new LoginResult();
-		User user = new UserImpl().findByAccount(account);
-		result.setUser(user);
-		System.out.println(user.getAccount());
-		System.out.println(user.getPassword());
-		if (user == null) {
-			result.setReturnValue(USER_LOGIN_FAIL);
-			return result;
-		}
-
-		else {
-			if (user.getAccount().equals(account)
-					&& user.getPassword().equals(password)) {
-				if (user.isForbidden()) {
-					result.setReturnValue(USER_FORBIDDEN);
-					return result;
-				}
-				else if (!user.isValidated()) {
-					result.setReturnValue(USER_NOT_VALIDATED);
-					return result;
-				}
-				else if (user.isOnline()) {
-					result.setReturnValue(USER_ONLINE);
-					return result;
-				}
-				result.setReturnValue(USER_LOGIN_SUCCESS);
-				return result;
-			}
-			result.setReturnValue(USER_LOGIN_FAIL);
-			return result;
-		}
-	}
+//	/**
+//	 * 
+//	 * 用户登录，根据不同的情况返回不同的值
+//	 * 
+//	 * @author Xewee.Zhiwei.Wang
+//	 * @version 2011-9-25 下午04:04:00
+//	 * @param account
+//	 * @param password
+//	 * @return
+//	 */
+//	public LoginResult login(String account, String password) {
+//		LoginResult result = new LoginResult();
+//		User user = new UserImpl().findByAccount(account);
+//		result.setUser(user);
+//		System.out.println(user.getAccount());
+//		System.out.println(user.getPassword());
+//		if (user == null) {
+//			result.setReturnValue(USER_LOGIN_FAIL);
+//			return result;
+//		}
+//
+//		else {
+//			if (user.getAccount().equals(account)
+//					&& user.getPassword().equals(password)) {
+//				if (user.isForbidden()) {
+//					result.setReturnValue(USER_FORBIDDEN);
+//					return result;
+//				}
+//				else if (!user.isValidated()) {
+//					result.setReturnValue(USER_NOT_VALIDATED);
+//					return result;
+//				}
+//				else if (user.isOnline()) {
+//					result.setReturnValue(USER_ONLINE);
+//					return result;
+//				}
+//				result.setReturnValue(USER_LOGIN_SUCCESS);
+//				return result;
+//			}
+//			result.setReturnValue(USER_LOGIN_FAIL);
+//			return result;
+//		}
+//	}
 }
