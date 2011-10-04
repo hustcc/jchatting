@@ -1,5 +1,13 @@
 package com.jchatting.db.persistent;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
 /**
  * 存储jdbc的连接信息
  * @author Xewee.Zhiwei.Wang
@@ -8,6 +16,8 @@ package com.jchatting.db.persistent;
  */
 public class DbConfig {
 
+	private final static String XML_PATH = "res/dbconfig.xml";
+	
 	private static DbConfig instance = null;
 	
 	private String driver;
@@ -18,9 +28,46 @@ public class DbConfig {
 	
 	public synchronized static DbConfig instance() {
 		if (instance == null) {
-			return instance = new DbXmlParseUtil().parseConnectXml();
+			return instance = parseConnectXml();
 		}
 		return instance;
+	}
+	
+	private static DbConfig parseConnectXml() {
+		System.out.println("Parse DbConnect Xml");
+		DbConfig connectBean = new DbConfig();
+		
+		SAXReader reader=new SAXReader();
+		try {
+			Document document = reader.read(new FileInputStream(XML_PATH));
+			
+			Element databaseInfo = document.getRootElement();
+			Element driverElement = databaseInfo.element("driver");
+			connectBean.setDriver(driverElement.getText());
+			Element urlElement = databaseInfo.element("url");
+			connectBean.setUrl(urlElement.getText());
+		 	Element usernameElement = databaseInfo.element("user");
+		 	connectBean.setUserName(usernameElement.getText());
+		 	Element passwordElement = databaseInfo.element("password");
+		 	connectBean.setPassword(passwordElement.getText());
+		 	Element timeoutElement = databaseInfo.element("sessionTime");
+		 	connectBean.setTimeOut(timeoutElement.getText());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("dbconfig.xml文件未找到！");
+			System.exit(0);
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			System.out.println("dbconfig.xml文件解析发生错误！");
+			System.exit(0);
+		} catch (NumberFormatException e) {
+			System.out.println("dbconfig.xml解析中数据格式转换错误！");
+			System.exit(0);
+		}
+		return connectBean;
+	}
+	private DbConfig() {
+		
 	}
 	/**
 	 * @return the driver
