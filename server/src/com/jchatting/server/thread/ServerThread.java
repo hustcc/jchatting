@@ -81,6 +81,14 @@ public class ServerThread extends Thread {
 
 			new SendGroupMsgThread(dataPackage).start();
 		}
+		/**
+		 * 文件传送请求包直接转法
+		 */
+		else if (dataPackage.getType() == DataPackage.FILE_TRANS) {
+			System.out.println("发送文件请求：" + dataPackage.getReceiveId());
+//			System.out.println("发送的配置信息为：：" + dataPackage.getContent());
+			ServerMsgUtil.sendMsg(dataPackage);
+		}
 		else {
 			System.out.println("other");
 		}

@@ -25,7 +25,7 @@ public class PackageUtil {
 					.append(String.valueOf(dataPackage.getType()))
 					.append(StringUtil.appendToLength(dataPackage.getSendId(), " ", 20))
 					.append(StringUtil.appendToLength(dataPackage.getReceiveId(), " ", 20))
-					.append(StringUtil.appendToLength(dataPackage.getContent(), " ", 20)).toString();
+					.append(dataPackage.getContent()).toString();
 		} catch (EmptyStrException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
