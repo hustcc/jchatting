@@ -105,24 +105,29 @@ public class LoginFrame extends JFrame implements ActionListener, MouseListener,
 		// TODO Auto-generated method stub
 		Object source = e.getSource();
 		if (source == loginButton) {
+			loginButton.setEnabled(false);
 			
 			LoginResult result = new DbHanddle().login(accountTextField.getText(), String.valueOf(passwordField.getPassword()));
 			System.out.println(result);
 			switch (result.getReturnValue()) {
 				case DbHanddle.USER_FORBIDDEN :
 					JOptionPane.showMessageDialog(this, "用户账号被禁用！");
+					loginButton.setEnabled(false);
 					break;
 				case DbHanddle.USER_LOGIN_ERROR :
-					JOptionPane.showMessageDialog(this, "用户账号登录出错！");				
+					JOptionPane.showMessageDialog(this, "用户账号登录出错！");
+					loginButton.setEnabled(false);
 					break;
 				case DbHanddle.USER_LOGIN_FAIL :
 					JOptionPane.showMessageDialog(this, "用户账号密码不配备！");
+					loginButton.setEnabled(false);
 					break;
 				case DbHanddle.USER_LOGIN_SUCCESS :
 					loginSuccess(result);
 					break;
 				case DbHanddle.USER_NOT_VALIDATED :
 					JOptionPane.showMessageDialog(this, "用户账号没有通过审核！");
+					loginButton.setEnabled(false);
 					break;
 				case DbHanddle.USER_ONLINE :
 					JOptionPane.showMessageDialog(this, "登录成功，但帐号在其他地方登录！");

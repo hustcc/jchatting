@@ -225,30 +225,53 @@ public class ChatUserFrame extends JFrame
 		delOfflineMsg();
 	}
 	
-	public void recvCancelFileTransMsg(DataPackage dataPackage) {
+	/**
+	 * 收到对方发来的拒绝接受文件或者取消接受文件
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-6 下午09:41:02
+	 * @param dataPackage
+	 */
+	public void recvCancelRefuseFileTransMsg(DataPackage dataPackage) {
 		insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "System    " + new Timestamp(System.currentTimeMillis()));
 		String[] params = dataPackage.getContent().split(DataPackage.SPLIT_STRING);
 		String fileName = "";
 		String rate = "0 %";
-		if (params.length == 2) {
+		int type = SendRecvDialog.CANCEL_SEDNRECV;
+		if (params.length == 3) {
 			fileName = params[0];
 			rate = params[1];
+			try {
+				type = Integer.valueOf(params[2]);
+			} catch (NumberFormatException e) {
+				type = SendRecvDialog.CANCEL_SEDNRECV;
+			}
 		}
-		insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "File [ " + fileName + " ] send task is canceled, has sent " + rate + " !");
+		if (type == SendRecvDialog.CANCEL_SEDNRECV) {
+			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "File [ " + fileName + " ] send task is canceled, has sent " + rate + " !");
+		}
+		else if (type == SendRecvDialog.REFUSE_RECV) {
+			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "Your friend refuse to receive File [ " + fileName + " ] !");
+		}
+		
 	}
 	/**
-	 * 中断文件传送之后的操作，在聊天窗口显示信息
+	 * 中断或者拒绝文件传送之后的操作，在聊天窗口显示信息
 	 * @author Xewee.Zhiwei.Wang
 	 * @version 2011-10-5 下午07:20:30
 	 * @param fileName
 	 * @param rate
 	 */
-	public void cancelSendRecv(String fileName, String rate) {
-		insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "System    " + new Timestamp(System.currentTimeMillis()));
-		insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "File [ " + fileName + " ] send task is canceled, has sent " + rate + " !");
-		
+	public void cancelRefuseSendRecv(String fileName, String rate, int type) {
+		if (type == SendRecvDialog.CANCEL_SEDNRECV) {
+			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "System    " + new Timestamp(System.currentTimeMillis()));
+			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "File [ " + fileName + " ] send task is canceled, has sent " + rate + " !");
+		}
+		else if (type == SendRecvDialog.REFUSE_RECV) {
+			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "System    " + new Timestamp(System.currentTimeMillis()));
+			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "You refuse to receive File [ " + fileName + " ] !");
+		}
 		try {
-			ClientMsgUtil.sendMsg(ChatMainFrame.getSocket(), new DataPackage(DataPackage.FILE_TRANS_CANCEL, user.getAccount(), friend.getAccount(), fileName + DataPackage.SPLIT_STRING + rate));
+			ClientMsgUtil.sendMsg(ChatMainFrame.getSocket(), new DataPackage(DataPackage.FILE_TRANS_CANCEL, user.getAccount(), friend.getAccount(), fileName + DataPackage.SPLIT_STRING + rate + DataPackage.SPLIT_STRING + type));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -309,6 +332,21 @@ public class ChatUserFrame extends JFrame
 	}
 
 	/**
+	 * 对方拒绝收文件，关闭serverSocket
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-6 下午09:17:47
+	 * @param fileKey
+	 */
+	private void refuseToRecvFile(FileSocketConfig fileSocketConfig) {
+		SendRecvDialog sendRecvDialog = new SendRecvDialog(SendRecvDialog.RECEIVE_FILE, 
+				this, fileSocketConfig, friend.getAccount());
+		sendRecvDialog.setVisible(false);
+		new FileReceiveThread(sendRecvDialog, new File("res/temp/"), fileSocketConfig)
+				.start();
+		sendRecvDialog.cancel(SendRecvDialog.REFUSE_RECV);
+		
+	}
+	/**
 	 * 接受文件
 	 * @author Xewee.Zhiwei.Wang
 	 * @version 2011-10-5 下午03:51:11
@@ -344,12 +382,12 @@ public class ChatUserFrame extends JFrame
 			}
 			// 选择文件夹的时候，选择取消，则表示不同意接收文件
 			else {
-
+				refuseToRecvFile(fileSocketConfig);
 			}
 		}
 		// 不同意接受文件
 		else {
-
+			refuseToRecvFile(fileSocketConfig);
 		}
 	}
 	/**

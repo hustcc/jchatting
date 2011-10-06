@@ -163,7 +163,7 @@ public class ClientThread extends Thread {
 				chatUserFrame = ChatUserFramePool.getChatFrame(sendId);
 				if (chatUserFrame != null) {
 					chatUserFrame.setVisible(true);
-					chatUserFrame.recvCancelFileTransMsg(dataPackage);
+					chatUserFrame.recvCancelRefuseFileTransMsg(dataPackage);
 				}
 				else {
 					//TODO 1.自动跳出聊天窗口
@@ -171,7 +171,7 @@ public class ClientThread extends Thread {
 					chatUserFrame = new ChatUserFrame(mainFrame, friend);
 					chatUserFrame.setVisible(true);
 					ChatUserFramePool.addChatFrame(chatUserFrame);
-					chatUserFrame.recvCancelFileTransMsg(dataPackage);
+					chatUserFrame.recvCancelRefuseFileTransMsg(dataPackage);
 					
 					
 				}

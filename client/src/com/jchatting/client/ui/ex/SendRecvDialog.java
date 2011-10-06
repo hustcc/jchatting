@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Timer;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -15,6 +17,7 @@ import com.jchatting.client.config.FileSocketConfig;
 import com.jchatting.client.thread.FileReceiveThread;
 import com.jchatting.client.thread.FileSendThread;
 import com.jchatting.client.ui.ChatUserFrame;
+import com.jchatting.util.FileUtils;
 import com.jchatting.util.StringUtil;
 
 public class SendRecvDialog extends JDialog implements ActionListener {
@@ -23,6 +26,9 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public final static int CANCEL_SEDNRECV = 8;
+	public final static int REFUSE_RECV = 9;
 	
 	public final static int SEND_FILE = 1;
 	public final static int RECEIVE_FILE = 2;
@@ -38,10 +44,13 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 	
 	private JProgressBar progressBar;
 	private JLabel rateLabel;
+	private JLabel speedLabel;
 	private JButton cancelButton;
 	
 	private FileSendThread sendThread;
 	private FileReceiveThread receiveThread;
+	
+	private Timer timer;
 	
 
 	/**
@@ -56,6 +65,7 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 		this.fileName = this.config.getFileName();
 		this.fileSize = this.config.getFileLength();
 		
+		timer = new Timer();
 		
 		setTitle(type == SEND_FILE ? "Send File Progress" : "Receive File Progress");
 		
@@ -63,9 +73,13 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 		setSize(400, 160);
 		JPanel panel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setHgap(20);
 		flowLayout.setVgap(10);
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		getContentPane().add(panel, BorderLayout.SOUTH);
+		
+		speedLabel = new JLabel(" ");
+		panel.add(speedLabel);
 		
 		cancelButton = new JButton("Cancel");
 		panel.add(cancelButton);
@@ -118,6 +132,22 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 
 	}
 
+//	public void startSendRecv() {
+//		timer.schedule(new TimerTask() {
+//			long lastSecSize = 0;
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				long sendRecvSize = ((long)progressBar.getValue())/(long)100.0f * fileSize;
+//				long speed = sendRecvSize - lastSecSize;
+//				
+//				speedLabel.setText(String.valueOf(speed));
+//				
+//				lastSecSize = sendRecvSize;
+//			}
+//		}, 1000, 1000);
+//	}
+	
 	/**
 	 * 收发文件完成
 	 * @author Xewee.Zhiwei.Wang
@@ -142,20 +172,28 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 		}
 	}
 	
+	public void cancel(int type) {
+		System.out.println("cancel");
+		userFrame.cancelRefuseSendRecv(fileName, rateLabel.getText(), type);
+		if (this.type == SEND_FILE && sendThread != null) {
+			cancelButton.setEnabled(false);
+			sendThread.cancel();
+		}
+		else if (this.type == RECEIVE_FILE && receiveThread != null) {
+			cancelButton.setEnabled(false);
+			timer.cancel();
+			timer = null;
+			receiveThread.cancel();
+		}
+		
+		FileUtils.delete(new File("res/temp/"));
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() == cancelButton) {
-			System.out.println("cancel");
-			userFrame.cancelSendRecv(fileName, rateLabel.getText());
-			if (this.type == SEND_FILE && sendThread != null) {
-				cancelButton.setEnabled(false);
-				sendThread.cancel();
-			}
-			else if (this.type == RECEIVE_FILE && receiveThread != null) {
-				cancelButton.setEnabled(false);
-				receiveThread.cancel();
-			}
+			cancel(CANCEL_SEDNRECV);
 		}
 	}
 
