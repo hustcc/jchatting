@@ -6,7 +6,7 @@ package com.jchatting.server;
 import java.io.IOException;
 
 import com.jchatting.server.config.ServerConfig;
-import com.jchatting.server.thread.SendConfigThread;
+import com.jchatting.server.thread.MonitorConfigThread;
 import com.jchatting.server.thread.Server;
 
 /**
@@ -19,7 +19,7 @@ import com.jchatting.server.thread.Server;
 public class ServerMain {
 
 	public static void main(String[] args) {
-		new SendConfigThread(ServerConfig.instance().getPortConfig()).start();
+		new MonitorConfigThread(ServerConfig.instance().getPortConfig()).start();
 		
 		try {
 			new Server().listen(ServerConfig.instance().getPort());

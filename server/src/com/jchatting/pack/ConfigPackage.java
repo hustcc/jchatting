@@ -47,6 +47,7 @@ public class ConfigPackage implements Cloneable, Serializable {
 	
 	public ConfigPackage() {
 	}
+	
 	public ConfigPackage(String driver, String url, String user,
 			String password, String timeOut, String ipConfig,
 			String portConfig, String ip, String port) {

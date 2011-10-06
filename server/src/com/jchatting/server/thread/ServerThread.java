@@ -89,6 +89,12 @@ public class ServerThread extends Thread {
 //			System.out.println("发送的配置信息为：：" + dataPackage.getContent());
 			ServerMsgUtil.sendMsg(dataPackage);
 		}
+		/**
+		 * 已经停止传送文件消息
+		 */
+		else if (dataPackage.getType() == DataPackage.FILE_TRANS_CANCEL) {
+			ServerMsgUtil.sendMsg(dataPackage);
+		}
 		else {
 			System.out.println("other");
 		}

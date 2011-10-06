@@ -13,7 +13,7 @@ ChatMainFrame.reConstractTree和ChatMainFrame.constractTree效率态度，应该
 //为了安全性:客户端连接数据库的参数、连接ip和端口由服务器发送，其中数据库连接参数不写配置文件，每次由服务器得到，
 //ip和port每次发送之后写如配置文件，客户端每次启动读配置文件
 DbPoolUtil中连接数据库的信息必须分成：服务器和客户端两种写法，目前用的客户端写法
-
+//send config thread 一样必须为多线程
 
 
 备注：
