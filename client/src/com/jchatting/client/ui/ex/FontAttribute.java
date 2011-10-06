@@ -14,6 +14,8 @@ public class FontAttribute {
 	public final static int RECEIVER_TIME_ATTRIBUTE = 2;
 	public final static int SYSTEM_ATTRIBUTE = 3;
 	public final static int OFFLINE_ATTRIBUTE = 4;
+	public final static int FILE_TRANS_SUCCESS = 5;
+	public final static int FILE_TRANS_FAIL = 6;
 	
 	private SimpleAttributeSet attrSet = null; // 属性集
 
@@ -44,6 +46,18 @@ public class FontAttribute {
 			case SYSTEM_ATTRIBUTE :
 				this.setForeColor(Color.GRAY);
 				this.setBold(false);
+				this.setItalic(true);
+				this.setSize(10);
+				break;
+			case FILE_TRANS_SUCCESS :
+				this.setForeColor(Color.GREEN);
+				this.setBold(true);
+				this.setItalic(true);
+				this.setSize(10);
+				break;
+			case FILE_TRANS_FAIL :
+				this.setForeColor(Color.RED);
+				this.setBold(true);
 				this.setItalic(true);
 				this.setSize(10);
 				break;

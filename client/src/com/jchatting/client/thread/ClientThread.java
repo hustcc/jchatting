@@ -3,12 +3,10 @@
  */
 package com.jchatting.client.thread;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Map;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import com.jchatting.client.config.FileSocketConfig;
@@ -105,54 +103,44 @@ public class ClientThread extends Thread {
 		String sendId = dataPackage.getSendId();
 		String receiveId = dataPackage.getReceiveId();
 //		String content = dataPackage.getContent();
+		ChatUserFrame chatUserFrame = null;
+		ChatGroupFrame chatGroupFrame = null;
 		switch (type) {
+			
 			case DataPackage.SYSTEM :
 				//TODO
 				break;
 			case DataPackage.FILE_TRANS :
-//				System.out.println("filetrans:" + dataPackage.getContent());
 				FileSocketConfig fileSocketConfig = FileSocketConfig.valueOf(dataPackage.getContent());
+				//如果从收到的数据包中可以解析出fileSocketConfig
 				if (fileSocketConfig != null) {
-					int clicked = JOptionPane.showConfirmDialog(mainFrame, "Friend [ " + sendId + " ] send file ' " + fileSocketConfig.getFileName() + " ' to you, Receive or not?", "Confimm", JOptionPane.YES_NO_OPTION);
-					if (clicked == JOptionPane.OK_OPTION) {
-						JFileChooser fileChooser = new JFileChooser();
-						fileChooser.setMultiSelectionEnabled(false);
-						fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-						
-						if (fileChooser.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-							File fileSavePath = fileChooser.getSelectedFile();
-							if (fileSavePath != null && fileSavePath.isDirectory()) {
-								ChatUserFrame chatUserFrame = ChatUserFramePool.getChatFrame(sendId);
-								if (chatUserFrame == null) {
-									chatUserFrame = new ChatUserFrame(mainFrame, mainFrame.getFriendByAccount(sendId));
-									chatUserFrame.setVisible(true);
-									ChatUserFramePool.addChatFrame(chatUserFrame);
-								}
-								chatUserFrame.receiveFileAction(fileSavePath, fileSocketConfig);
-							}
-							else {
-								JOptionPane.showMessageDialog(mainFrame, "Please choose a folder!");
-							}
-						}
-						
-						
+					//将下载任务交给相应的chatuserframe处理，如果不存在，则新建
+					chatUserFrame = ChatUserFramePool.getChatFrame(sendId);
+					if (chatUserFrame == null) {
+						chatUserFrame = new ChatUserFrame(mainFrame, mainFrame.getFriendByAccount(sendId));
+						ChatUserFramePool.addChatFrame(chatUserFrame);
 					}
+					chatUserFrame.setVisible(true);
+					chatUserFrame.receiveFileAction(fileSocketConfig);
 				}
 				
 				break;
+				
 			//服务器转发好友上线消息
 			case DataPackage.CLIENT_ON :
 				//TODO
 				System.out.println("friend " + sendId + " online!");
 				friendOnOffline(sendId, true);
 				break;
+				
 			case DataPackage.CLIENT_OFF :
 				//TODO
 				System.out.println("friend " + sendId + " offline!");
 				friendOnOffline(sendId, false);
 				break;
+				
 			case DataPackage.USER :
-				ChatUserFrame chatUserFrame = ChatUserFramePool.getChatFrame(sendId);
+				chatUserFrame = ChatUserFramePool.getChatFrame(sendId);
 				if (chatUserFrame != null) {
 					chatUserFrame.setVisible(true);
 					chatUserFrame.receiveMsg(dataPackage, new Timestamp(System.currentTimeMillis()));
@@ -170,8 +158,26 @@ public class ClientThread extends Thread {
 				}
 				break;
 				
+			case DataPackage.FILE_TRANS_CANCEL :
+//				System.out.println("收到停止传送的消息，来自" + dataPackage.getSendId());
+				chatUserFrame = ChatUserFramePool.getChatFrame(sendId);
+				if (chatUserFrame != null) {
+					chatUserFrame.setVisible(true);
+					chatUserFrame.recvCancelFileTransMsg(dataPackage);
+				}
+				else {
+					//TODO 1.自动跳出聊天窗口
+					Friend friend = mainFrame.getFriendByAccount(sendId);
+					chatUserFrame = new ChatUserFrame(mainFrame, friend);
+					chatUserFrame.setVisible(true);
+					ChatUserFramePool.addChatFrame(chatUserFrame);
+					chatUserFrame.recvCancelFileTransMsg(dataPackage);
+					
+					
+				}
+				break;
 			case DataPackage.GROUP :
-				ChatGroupFrame chatGroupFrame = ChatGroupFramePool.getChatFrame(receiveId);
+				chatGroupFrame = ChatGroupFramePool.getChatFrame(receiveId);
 				if (chatGroupFrame != null) {
 					chatGroupFrame.setVisible(true);
 					chatGroupFrame.receiveMsg(dataPackage, new Timestamp(System.currentTimeMillis()));

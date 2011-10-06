@@ -19,6 +19,18 @@ public class StringUtil {
 	}
 
 	/**
+	 * 当string的长度超过limitLength时，将后面的字符串代替成replaceChars；
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-5 下午06:25:37
+	 * @param string
+	 * @param limitLength
+	 * @param replaceChars
+	 * @return
+	 */
+	public static String replaceLengthChars(String string, int limitLength, String replaceChars) {
+		return string.length() > limitLength ? string.substring(0, limitLength) + replaceChars : string;
+	}
+	/**
 	 * 判断str是否为空，即长度为0或者NULL
 	 * 
 	 * @author Xewee.Zhiwei.Wang

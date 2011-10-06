@@ -15,6 +15,7 @@ public class DataPackage implements Cloneable, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public final static String SPLIT_STRING = "!@#%&";
 	
 	/**
 	 * 由服务器发送给客户端的配置信息
@@ -44,6 +45,10 @@ public class DataPackage implements Cloneable, Serializable {
 	 * 发送文件请求
 	 */
 	public static final int FILE_TRANS = 6;
+	/**
+	 * 某一方取消发送文件
+	 */
+	public static final int FILE_TRANS_CANCEL = 7;
 	private int type;
 	private String sendId;
 	private String receiveId;

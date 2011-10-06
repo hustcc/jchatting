@@ -11,21 +11,28 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.jchatting.client.ui.ex.SendRecvDialog;
+
 /**
  * @author Xewee.Zhiwei.Wang
  * @version 2011-10-4 下午02:16:38
  */
 public class FileSendThread extends Thread {
-
+	
+	private SendRecvDialog sendRecvDialog;
+	
 	private int initPort;
 	private File fileToSend;
 	private ServerSocket serverSocket;
 	private Socket socket;
+	private DataOutputStream writer;
 
-	public FileSendThread(File fileToSend, int initPort) {
+	public FileSendThread(SendRecvDialog sendRecvDialog, File fileToSend, int initPort) {
+		this.sendRecvDialog = sendRecvDialog;
 		this.fileToSend = fileToSend;
 		this.initPort = initPort;
 
+		this.sendRecvDialog.setSendThread(this);
 		findAblePortAndInit();
 	}
 	/**
@@ -38,7 +45,7 @@ public class FileSendThread extends Thread {
 		while (true) {
 			try {
 				serverSocket = new ServerSocket(initPort);
-				serverSocket.setSoTimeout(10 * 1000);
+//				serverSocket.setSoTimeout(10 * 1000);
 				System.out.println("监听端口：" + initPort);
 				break;
 			} catch (IOException e) {
@@ -55,21 +62,50 @@ public class FileSendThread extends Thread {
 		// TODO Auto-generated method stub
 		try {
 			socket = serverSocket.accept();
-			DataOutputStream writer = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			writer = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			
+			long sizeCount = 0;
 			
 			FileInputStream fileInputStream = new FileInputStream(this.fileToSend);
-			byte[] buffer = new byte[10 * 1024];
+			byte[] buffer = new byte[100 * 1024];
 			int length = 0;
-			while ((length = fileInputStream.read(buffer)) != -1) {
+			while (((length = fileInputStream.read(buffer)) != -1)) {
+				
 				writer.write(buffer, 0, length);
 				writer.flush();
+				sizeCount = sizeCount + length;
+				
+				
+				this.sendRecvDialog.update(sizeCount);
 			}
 			fileInputStream.close();
 			writer.close();
-//			socket.close();
+			socket.close();
+			
+			if (fileToSend.length() == sizeCount) {
+				this.sendRecvDialog.finishFileTrans();
+			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			return;
+		} finally {
+			try {
+				if (this.sendRecvDialog != null) {
+					this.sendRecvDialog.setVisible(false);
+					this.sendRecvDialog.dispose();
+					this.sendRecvDialog = null;
+				}
+				if (socket != null) {
+					socket.close();
+				}
+				if (serverSocket != null) {
+					serverSocket.close();
+				}
+				socket = null;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+//				e.printStackTrace();
+			}
 		}
 		System.out.println("send file thread stop");
 	}
@@ -86,5 +122,20 @@ public class FileSendThread extends Thread {
 		this.initPort = initPort;
 	}
 	
+	public void cancel() {
+		try {
+		if (socket != null) {	
+			socket.close();
+			socket = null;
+		}
+		if (writer != null) {
+			writer.close();
+			writer = null;
+		}
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 }

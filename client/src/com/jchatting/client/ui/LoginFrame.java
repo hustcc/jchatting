@@ -89,8 +89,8 @@ public class LoginFrame extends JFrame implements ActionListener, MouseListener,
 		cancelButton.addActionListener(this);
 		regLabel.addMouseListener(this);
 		
-//		accountTextField.setText("wzwahl36");
-//		passwordField.setText("wzwahl36");
+		accountTextField.setText("wzwahl36");
+		passwordField.setText("wzwahl36");
 		
 	}
 

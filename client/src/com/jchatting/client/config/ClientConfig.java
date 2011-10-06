@@ -8,8 +8,11 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -17,6 +20,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.jchatting.pack.ConfigPackage;
+import com.jchatting.util.RSA;
 
 
 /**
@@ -67,12 +71,22 @@ public class ClientConfig {
 	private static ClientConfig getConfigFromServer() {
 		ClientConfig config = new ClientConfig();
 		config = parseClientXml(config);
+		Socket socket = null;
 		
 		try {
-			Socket socket = new Socket(config.getIpConfig(), config.getPortConfig());
+			socket = new Socket(config.getIpConfig(), config.getPortConfig());
+			socket.setSoTimeout(30 * 1000);
+			ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream());
+			RSA rsa = new RSA();
+			rsa.generateKey();
+			RSAPublicKey publicKey = rsa.getPublicKey();
+			writer.writeObject(publicKey);
+			
 			DataInputStream reader = new DataInputStream(socket.getInputStream());
 			String configMsg = reader.readUTF();
-//			System.out.println("configMsg:" + configMsg);
+			configMsg = rsa.decrypt(rsa.getPrivateKey(), configMsg);
+			System.out.println("configMsg:" + configMsg);
+			
 			ConfigPackage configPackage = ConfigPackage.valueOf(configMsg);
 			if (configPackage != null && CONFIG_PACKAGE.equals(configPackage.getType())) {
 				config.setDriver(configPackage.getDriver());
@@ -101,6 +115,20 @@ public class ClientConfig {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			RSA.keyPair = null;
+			
+			try {
+				if (socket != null) {
+					socket.close();
+				}
+			} catch (IOException e) {
+					// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		return config;

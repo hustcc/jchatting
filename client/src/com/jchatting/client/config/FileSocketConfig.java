@@ -13,16 +13,18 @@ public class FileSocketConfig {
 	private String ip;
 	private String port;
 	private String fileName;
+	private long fileLength;
 	/**
 	 * 
 	 */
-	public FileSocketConfig() {
+	private FileSocketConfig() {
 		// TODO Auto-generated constructor stub
 	}
-	public FileSocketConfig(String ip, String port, String fileName) {
+	public FileSocketConfig(String ip, String port, String fileName, long fileLenght) {
 		this.ip = ip;
 		this.port = port;
 		this.fileName = fileName;
+		this.fileLength = fileLenght;
 	}
 	
 	/**
@@ -31,7 +33,8 @@ public class FileSocketConfig {
 	public String toString() {
 		return new StringBuffer().append(ip).append(SPLIT_STRING)
 								 .append(port).append(SPLIT_STRING)
-								 .append(fileName).toString();
+								 .append(fileName).append(SPLIT_STRING)
+								 .append(fileLength).toString();
 	}
 	/**
 	 * 从字符串解析出config
@@ -47,8 +50,12 @@ public class FileSocketConfig {
 			String string = params[i];
 			System.out.println(i + ":" + string);
 		}
-		if (params.length == 3) {
-			return new FileSocketConfig(params[0], params[1], params[2]);
+		if (params.length == 4) {
+			try {
+				return new FileSocketConfig(params[0], params[1], params[2], Integer.valueOf(params[3]));
+			} catch (NumberFormatException e) {
+				return new FileSocketConfig(params[0], params[1], params[2], 0);
+			}
 		}
 		return null;
 	}
@@ -87,6 +94,18 @@ public class FileSocketConfig {
 	 */
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+	/**
+	 * @return the fileLength
+	 */
+	public long getFileLength() {
+		return fileLength;
+	}
+	/**
+	 * @param fileLength the fileLength to set
+	 */
+	public void setFileLength(long fileLength) {
+		this.fileLength = fileLength;
 	}
 	
 	

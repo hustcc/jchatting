@@ -35,6 +35,7 @@ import com.jchatting.client.config.FileSocketConfig;
 import com.jchatting.client.thread.FileReceiveThread;
 import com.jchatting.client.thread.FileSendThread;
 import com.jchatting.client.ui.ex.FontAttribute;
+import com.jchatting.client.ui.ex.SendRecvDialog;
 import com.jchatting.client.util.ChatUserFramePool;
 import com.jchatting.client.util.ClientMsgUtil;
 import com.jchatting.db.DbHanddle;
@@ -53,6 +54,7 @@ public class ChatUserFrame extends JFrame
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
 	private ChatMainFrame mainFrame;
 	private User user;
 	private Friend friend;
@@ -222,6 +224,51 @@ public class ChatUserFrame extends JFrame
 
 		delOfflineMsg();
 	}
+	
+	public void recvCancelFileTransMsg(DataPackage dataPackage) {
+		insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "System    " + new Timestamp(System.currentTimeMillis()));
+		String[] params = dataPackage.getContent().split(DataPackage.SPLIT_STRING);
+		String fileName = "";
+		String rate = "0 %";
+		if (params.length == 2) {
+			fileName = params[0];
+			rate = params[1];
+		}
+		insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "File [ " + fileName + " ] send task is canceled, has sent " + rate + " !");
+	}
+	/**
+	 * 中断文件传送之后的操作，在聊天窗口显示信息
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-5 下午07:20:30
+	 * @param fileName
+	 * @param rate
+	 */
+	public void cancelSendRecv(String fileName, String rate) {
+		insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "System    " + new Timestamp(System.currentTimeMillis()));
+		insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "File [ " + fileName + " ] send task is canceled, has sent " + rate + " !");
+		
+		try {
+			ClientMsgUtil.sendMsg(ChatMainFrame.getSocket(), new DataPackage(DataPackage.FILE_TRANS_CANCEL, user.getAccount(), friend.getAccount(), fileName + DataPackage.SPLIT_STRING + rate));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * 收发完成之后调用，更新界面,由FileTransProgressBar调用，传入参数为自己
+	 * 
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-5 下午03:16:59
+	 * @param key
+	 */
+	public void finishFileTrans(SendRecvDialog sendRecvDialog, String fileName) {
+		sendRecvDialog.setVisible(false);
+		sendRecvDialog.dispose();
+		sendRecvDialog = null;
+		insert(new FontAttribute(FontAttribute.FILE_TRANS_SUCCESS), "System    " + new Timestamp(System.currentTimeMillis()));
+		insert(new FontAttribute(FontAttribute.FILE_TRANS_SUCCESS), "File [" + fileName + "] send task is finished!");
+		
+	}
 
 	/**
 	 * 发送文件请求之后的动作
@@ -231,16 +278,25 @@ public class ChatUserFrame extends JFrame
 	 * @param fileToSend
 	 */
 	private void sendFileAction(File fileToSend) {
+
+		// 更新界面
+		SendRecvDialog sendRecvDialog = new SendRecvDialog(SendRecvDialog.SEND_FILE, this, 
+				new FileSocketConfig("", "", fileToSend.getName(), fileToSend.length()), friend.getAccount());
+//		toolBar.add(sendRecvDialog);
+		sendRecvDialog.setVisible(true);
 		// 开启服务器，监听客户端，发送文件
-		FileSendThread fileTransThread = new FileSendThread(fileToSend,
-				ClientConfig.instance().getPortConfig() + 1);
+		FileSendThread fileTransThread = new FileSendThread(
+				sendRecvDialog, fileToSend, ClientConfig.instance()
+						.getPortConfig() + 1);
 		fileTransThread.start();
 
+		//发送信息给好友，说明自己的服务器已经开了
 		String ip = ChatMainFrame.getSocket().getInetAddress().toString();
 		ip = ip.substring(ip.lastIndexOf("/") + 1);
 
 		FileSocketConfig fileSocketConfig = new FileSocketConfig(ip, String
-				.valueOf(fileTransThread.getInitPort()), fileToSend.getName());
+				.valueOf(fileTransThread.getInitPort()), fileToSend.getName(),
+				fileToSend.length());
 		try {
 			ClientMsgUtil.sendMsg(ChatMainFrame.getSocket(), new DataPackage(
 					DataPackage.FILE_TRANS, user.getAccount(), friend
@@ -252,9 +308,49 @@ public class ChatUserFrame extends JFrame
 
 	}
 
-	public void receiveFileAction(File fileSavePath,
-			FileSocketConfig fileSocketConfig) {
-		new FileReceiveThread(fileSavePath, fileSocketConfig).start();
+	/**
+	 * 接受文件
+	 * @author Xewee.Zhiwei.Wang
+	 * @version 2011-10-5 下午03:51:11
+	 * @param fileSocketConfig
+	 */
+	public void receiveFileAction(FileSocketConfig fileSocketConfig) {
+		
+		int clicked = JOptionPane.showConfirmDialog(this,
+				"Friend [ " + friend.getAccount() + " ] send file ' "
+						+ fileSocketConfig.getFileName()
+						+ " ' to you, Receive or not?", "Confimm",
+				JOptionPane.YES_NO_OPTION);
+		// 同意接受文件
+		if (clicked == JOptionPane.OK_OPTION) {
+			// 选择下载的文件夹
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setMultiSelectionEnabled(false);
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+			if (fileChooser.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+				File fileSavePath = fileChooser.getSelectedFile();
+				if (fileSavePath != null && fileSavePath.isDirectory()) {
+					SendRecvDialog sendRecvDialog = new SendRecvDialog(SendRecvDialog.RECEIVE_FILE, 
+							this, fileSocketConfig, friend.getAccount());
+					sendRecvDialog.setVisible(true);
+					new FileReceiveThread(sendRecvDialog, fileSavePath, fileSocketConfig)
+							.start();
+				}
+				else {
+					JOptionPane.showMessageDialog(this,
+							"Please choose a folder!");
+				}
+			}
+			// 选择文件夹的时候，选择取消，则表示不同意接收文件
+			else {
+
+			}
+		}
+		// 不同意接受文件
+		else {
+
+		}
 	}
 	/**
 	 * 以一定的格式向textpane中添加字符串
@@ -318,6 +414,7 @@ public class ChatUserFrame extends JFrame
 			String content = "    " + message;
 			insert(new FontAttribute(FontAttribute.SENDER_TIME_ATTRIBUTE),
 					user_time);
+			
 			insert(this.fontAttribute, content);
 			int type = DataPackage.USER;
 			String sendId = user.getAccount();
@@ -428,7 +525,6 @@ public class ChatUserFrame extends JFrame
 				}
 			}
 		}
-
 	}
 
 	@Override
@@ -497,5 +593,4 @@ public class ChatUserFrame extends JFrame
 	public void setFriend(Friend friend) {
 		this.friend = friend;
 	}
-
 }
