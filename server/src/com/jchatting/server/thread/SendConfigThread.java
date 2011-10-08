@@ -53,11 +53,9 @@ public class SendConfigThread extends Thread {
 					DbConfig.instance().getUserName(), 
 					DbConfig.instance().getPassword(), 
 					DbConfig.instance().getTimeOut(),
-					//todo
-					"122.205.7.99", 
+					ServerConfig.instance().getIpConfig(), 
 					String.valueOf(ServerConfig.instance().getPortConfig()),
-					//todo
-					"122.205.7.99", 
+					ServerConfig.instance().getIp(), 
 					String.valueOf(ServerConfig.instance().getPort()))
 								.toString()));
 		} catch (IOException e) {

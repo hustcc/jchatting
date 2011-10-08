@@ -74,7 +74,7 @@ public class StringUtil {
 			returnStr = "";
 			int srcLen = src.length();
 			if (srcLen >= length) {
-				return src.subSequence(0, 20).toString();
+				return src.subSequence(0, length).toString();
 			}
 			else {
 				returnStr = src;
