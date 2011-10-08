@@ -72,13 +72,13 @@ public class ClientConfig {
 		ClientConfig config = new ClientConfig();
 		config = parseClientXml(config);
 		Socket socket = null;
-		
+		RSA rsa = null;
 		try {
 			socket = new Socket(config.getIpConfig(), config.getPortConfig());
 			socket.setSoTimeout(30 * 1000);
 			ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream());
-			RSA rsa = new RSA();
-			rsa.generateKey();
+			rsa = new RSA();
+//			rsa.generateKey();
 			RSAPublicKey publicKey = rsa.getPublicKey();
 			writer.writeObject(publicKey);
 			
@@ -119,7 +119,9 @@ public class ClientConfig {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			RSA.keyPair = null;
+			if (rsa != null) {
+				rsa.setKeyPair(null);
+			}
 			
 			try {
 				if (socket != null) {

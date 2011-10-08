@@ -167,22 +167,16 @@ public class RSA {
 		}
 		return bytes;
 	}
-//	public static void main(String[] args) {
-//		try {
-//			RSA encrypt = new RSA();
-//			String string = "wefedrgdgtrttttttttttttttttttttttttttttttttttttttttttttt!@#$%^&*()ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttta@";// 输入的明文
-//			KeyPair keyPair = encrypt.generateKey();// 调用函数生成密钥对，函数见下
-//			RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-//			RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-//			System.out.println("en:" + string.length());
-////			byte[] byte_en = encrypt.encrypt(publicKey, string.getBytes());
-////			System.out.println(byte_en.length);
-////			System.out.println(byte2String(byte_en).length());
-////			System.out.println(string2Bytes(byte2String(byte_en)).length);
-//			System.out.println("de:" + encrypt.decrypt(privateKey, encrypt.encrypt(publicKey, string)));
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-
+	/**
+	 * @return the keyPair
+	 */
+	public KeyPair getKeyPair() {
+		return keyPair;
+	}
+	/**
+	 * @param keyPair the keyPair to set
+	 */
+	public void setKeyPair(KeyPair keyPair) {
+		this.keyPair = keyPair;
+	}
 }
