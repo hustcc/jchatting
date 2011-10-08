@@ -34,8 +34,8 @@ public class FileReceiveThread extends Thread {
 		this.sendRecvDialog.setReceiveThread(this);
 		
 		try {
-//			System.out.println("file recv ip:"+ this.fileSocketConfig.getIp()+":");
-//			System.out.println("file recv port:"+ this.fileSocketConfig.getPort()+":");
+			System.out.println("file recv ip:"+ this.fileSocketConfig.getIp()+":");
+			System.out.println("file recv port:"+ this.fileSocketConfig.getPort()+":");
 			this.socket = new Socket(this.fileSocketConfig.getIp(), Integer.valueOf(this.fileSocketConfig.getPort()));
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
