@@ -18,7 +18,7 @@ import javax.crypto.Cipher;
  */
 public class RSA {
 
-	public static KeyPair keyPair = null;
+	public KeyPair keyPair = null;
 	/**
 	 * 
 	 */
@@ -45,11 +45,11 @@ public class RSA {
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
-	public KeyPair generateKey() throws NoSuchAlgorithmException {
+	private KeyPair generateKey() throws NoSuchAlgorithmException {
 		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
 		keyPairGen.initialize(2048, new SecureRandom());
-		RSA.keyPair = keyPairGen.generateKeyPair();
-		return RSA.keyPair;
+		this.keyPair = keyPairGen.generateKeyPair();
+		return this.keyPair;
 	}
 	/**
 	 * 解密

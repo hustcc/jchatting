@@ -5,7 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Timer;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -44,15 +43,20 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 	
 	private JProgressBar progressBar;
 	private JLabel rateLabel;
-	private JLabel speedLabel;
 	private JButton cancelButton;
 	
 	private FileSendThread sendThread;
 	private FileReceiveThread receiveThread;
 	
-	private Timer timer;
-	
 
+	//以下变量用于传送速度计算的
+	private long lastFileSize;
+	private long lastTime;
+	private long currentTime;
+	private long sep;
+	private float speed;
+	private String speedString;
+	
 	/**
 	 * Create the frame.
 	 */
@@ -65,8 +69,6 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 		this.fileName = this.config.getFileName();
 		this.fileSize = this.config.getFileLength();
 		
-		timer = new Timer();
-		
 		setTitle(type == SEND_FILE ? "Send File Progress" : "Receive File Progress");
 		
 		setBounds(100, 100, 400, 165);
@@ -78,13 +80,15 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		getContentPane().add(panel, BorderLayout.SOUTH);
 		
-		speedLabel = new JLabel(" ");
-		panel.add(speedLabel);
 		
 		cancelButton = new JButton("Cancel");
 		panel.add(cancelButton);
 		
 		progressBar = new JProgressBar();
+		progressBar.setMaximum(100);
+		progressBar.setMinimum(0);
+		progressBar.setStringPainted(true);
+		progressBar.setString("0 %");
 		getContentPane().add(progressBar, BorderLayout.CENTER);
 		
 		JPanel panel_1 = new JPanel();
@@ -120,33 +124,34 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 		flowLayout_2.setAlignment(FlowLayout.RIGHT);
 		panel_1.add(panel_3, BorderLayout.EAST);
 		
-		JLabel fileSizeLabel = new JLabel(this.fileSize + "Bytes");
+		float tmp = fileSize;
+		JLabel fileSizeLabel = new JLabel(tmp + "b");
+		
+		if (tmp > 1024) {
+			tmp = tmp / 1024.0f;
+			fileSizeLabel.setText(tmp + "Kb");
+			if (tmp > 1024) {
+				tmp = tmp / 1024.0f;
+				fileSizeLabel.setText(tmp + "Mb");
+				if (tmp > 1024) {
+					tmp = tmp / 1024.0f;
+					fileSizeLabel.setText(tmp + "Gb");
+				}
+			}
+		}
+		
+		
 		panel_3.add(fileSizeLabel);
 		
 		rateLabel = new JLabel();
 		panel_3.add(rateLabel);
 		
 		setAlwaysOnTop(true);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		cancelButton.addActionListener(this);
 
 	}
-
-//	public void startSendRecv() {
-//		timer.schedule(new TimerTask() {
-//			long lastSecSize = 0;
-//			@Override
-//			public void run() {
-//				// TODO Auto-generated method stub
-//				long sendRecvSize = ((long)progressBar.getValue())/(long)100.0f * fileSize;
-//				long speed = sendRecvSize - lastSecSize;
-//				
-//				speedLabel.setText(String.valueOf(speed));
-//				
-//				lastSecSize = sendRecvSize;
-//			}
-//		}, 1000, 1000);
-//	}
 	
 	/**
 	 * 收发文件完成
@@ -164,9 +169,25 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 	 * @param sendOrReceiSize
 	 */
 	public void update(long sendOrReceiSize) {
-//		System.out.println("send :" + sendOrReceiSize);
+		currentTime = System.currentTimeMillis();
+		sep = currentTime - lastTime;
+		
+		if (sep >= 1000) {
+			speed = (float)(sendOrReceiSize - lastFileSize)/(float)sep;//bit/ms
+			speed = speed * 1000.0f / 1024.0f;//k/s
+			speedString = String.valueOf(speed) + " Kb/S";
+			if (speed > 1000) {
+				speed = speed / 1024.0f;//m/s
+				speedString = String.valueOf(speed) + " Mb/S";
+			}
+//			speedLabel.setText(String.valueOf(((float)(sendOrReceiSize - lastFileSize)/(float)sep)) + " M/S");
+			progressBar.setString(speedString);
+			lastFileSize = sendOrReceiSize;
+			lastTime = currentTime;
+		}
+		
+		
 		if (sendOrReceiSize <= this.fileSize && this.fileSize != 0) {
-			rateLabel.setText(String.valueOf(sendOrReceiSize / this.fileSize));
 			progressBar.setValue((int)(((float)sendOrReceiSize/(float)this.fileSize) * 100));
 			rateLabel.setText(progressBar.getValue() + " %");
 		}
@@ -174,15 +195,13 @@ public class SendRecvDialog extends JDialog implements ActionListener {
 	
 	public void cancel(int type) {
 		System.out.println("cancel");
-		userFrame.cancelRefuseSendRecv(fileName, rateLabel.getText(), type);
+		userFrame.cancelRefuseSendRecv(fileName, "" + progressBar.getValue(), type);
 		if (this.type == SEND_FILE && sendThread != null) {
 			cancelButton.setEnabled(false);
 			sendThread.cancel();
 		}
 		else if (this.type == RECEIVE_FILE && receiveThread != null) {
 			cancelButton.setEnabled(false);
-			timer.cancel();
-			timer = null;
 			receiveThread.cancel();
 		}
 		

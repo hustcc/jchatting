@@ -89,8 +89,8 @@ public class LoginFrame extends JFrame implements ActionListener, MouseListener,
 		cancelButton.addActionListener(this);
 		regLabel.addMouseListener(this);
 		
-		accountTextField.setText("wzwahl36");
-		passwordField.setText("wzwahl36");
+//		accountTextField.setText("wzwahl36");
+//		passwordField.setText("wzwahl36");
 		
 	}
 
@@ -112,15 +112,15 @@ public class LoginFrame extends JFrame implements ActionListener, MouseListener,
 			switch (result.getReturnValue()) {
 				case DbHanddle.USER_FORBIDDEN :
 					JOptionPane.showMessageDialog(this, "用户账号被禁用！");
-					loginButton.setEnabled(false);
+					loginButton.setEnabled(true);
 					break;
 				case DbHanddle.USER_LOGIN_ERROR :
 					JOptionPane.showMessageDialog(this, "用户账号登录出错！");
-					loginButton.setEnabled(false);
+					loginButton.setEnabled(true);
 					break;
 				case DbHanddle.USER_LOGIN_FAIL :
 					JOptionPane.showMessageDialog(this, "用户账号密码不配备！");
-					loginButton.setEnabled(false);
+					loginButton.setEnabled(true);
 					break;
 				case DbHanddle.USER_LOGIN_SUCCESS :
 					loginSuccess(result);

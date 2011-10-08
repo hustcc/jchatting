@@ -69,15 +69,15 @@ public class FileSendThread extends Thread {
 			FileInputStream fileInputStream = new FileInputStream(this.fileToSend);
 			byte[] buffer = new byte[100 * 1024];
 			int length = 0;
-			while (((length = fileInputStream.read(buffer)) != -1)) {
+			while ((length = fileInputStream.read(buffer)) != -1) {
 				
 				writer.write(buffer, 0, length);
 				writer.flush();
 				sizeCount = sizeCount + length;
 				
-				
 				this.sendRecvDialog.update(sizeCount);
 			}
+			
 			fileInputStream.close();
 			writer.close();
 			socket.close();

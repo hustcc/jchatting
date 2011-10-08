@@ -264,7 +264,7 @@ public class ChatUserFrame extends JFrame
 	public void cancelRefuseSendRecv(String fileName, String rate, int type) {
 		if (type == SendRecvDialog.CANCEL_SEDNRECV) {
 			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "System    " + new Timestamp(System.currentTimeMillis()));
-			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "File [ " + fileName + " ] send task is canceled, has sent " + rate + " !");
+			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "File [ " + fileName + " ] send task is canceled, has sent " + rate + " % !");
 		}
 		else if (type == SendRecvDialog.REFUSE_RECV) {
 			insert(new FontAttribute(FontAttribute.FILE_TRANS_FAIL), "System    " + new Timestamp(System.currentTimeMillis()));
@@ -314,12 +314,14 @@ public class ChatUserFrame extends JFrame
 		fileTransThread.start();
 
 		//发送信息给好友，说明自己的服务器已经开了
-		String ip = ChatMainFrame.getSocket().getInetAddress().toString();
+		String ip = ChatMainFrame.getSocket().getLocalAddress().toString();
 		ip = ip.substring(ip.lastIndexOf("/") + 1);
-
+		
+		
 		FileSocketConfig fileSocketConfig = new FileSocketConfig(ip, String
 				.valueOf(fileTransThread.getInitPort()), fileToSend.getName(),
 				fileToSend.length());
+		System.out.println("send file length:" + fileSocketConfig.getFileLength());
 		try {
 			ClientMsgUtil.sendMsg(ChatMainFrame.getSocket(), new DataPackage(
 					DataPackage.FILE_TRANS, user.getAccount(), friend

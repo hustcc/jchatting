@@ -17,9 +17,6 @@ public class FileSocketConfig {
 	/**
 	 * 
 	 */
-	private FileSocketConfig() {
-		// TODO Auto-generated constructor stub
-	}
 	public FileSocketConfig(String ip, String port, String fileName, long fileLenght) {
 		this.ip = ip;
 		this.port = port;
@@ -34,7 +31,7 @@ public class FileSocketConfig {
 		return new StringBuffer().append(ip).append(SPLIT_STRING)
 								 .append(port).append(SPLIT_STRING)
 								 .append(fileName).append(SPLIT_STRING)
-								 .append(fileLength).toString();
+								 .append(String.valueOf(fileLength)).toString();
 	}
 	/**
 	 * 从字符串解析出config
@@ -46,13 +43,13 @@ public class FileSocketConfig {
 	 */
 	public static FileSocketConfig valueOf(String config) {
 		String [] params = config.split(SPLIT_STRING);
-		for (int i = 0; i < params.length; i++) {
-			String string = params[i];
-			System.out.println(i + ":" + string);
-		}
+//		for (int i = 0; i < params.length; i++) {
+//			String string = params[i];
+//			System.out.println(i + ":" + string);
+//		}
 		if (params.length == 4) {
 			try {
-				return new FileSocketConfig(params[0], params[1], params[2], Integer.valueOf(params[3]));
+				return new FileSocketConfig(params[0], params[1], params[2], Long.valueOf(params[3]));
 			} catch (NumberFormatException e) {
 				return new FileSocketConfig(params[0], params[1], params[2], 0);
 			}

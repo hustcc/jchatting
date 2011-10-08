@@ -32,6 +32,22 @@ public class FileReceiveThread extends Thread {
 		this.file = new File(fileSavePath, this.fileSocketConfig.getFileName());
 		
 		this.sendRecvDialog.setReceiveThread(this);
+		
+		try {
+//			System.out.println("file recv ip:"+ this.fileSocketConfig.getIp()+":");
+//			System.out.println("file recv port:"+ this.fileSocketConfig.getPort()+":");
+			this.socket = new Socket(this.fileSocketConfig.getIp(), Integer.valueOf(this.fileSocketConfig.getPort()));
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/* (non-Javadoc)
@@ -40,7 +56,7 @@ public class FileReceiveThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			socket = new Socket(fileSocketConfig.getIp(), Integer.valueOf(fileSocketConfig.getPort()));
+			
 			reader = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 			
 			long sizeCount = 0;
@@ -65,10 +81,6 @@ public class FileReceiveThread extends Thread {
 				this.sendRecvDialog.finishFileTrans();
 			}
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-//			e.printStackTrace();
-			return;
-		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
 			return;

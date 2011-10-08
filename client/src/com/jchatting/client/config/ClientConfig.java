@@ -152,18 +152,18 @@ public class ClientConfig {
 			try {
 				config.setPortConfig(Integer.valueOf(portElement.getText()));
 			} catch (NumberFormatException e) {
-				config.setPort(1235);
+				config.setPortConfig(1235);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			System.out.println("dbconfig.xml文件未找到！");
-			config.setIp("127.0.0.1");
-			config.setPort(1234);
+			System.out.println("clientconfig.xml文件未找到！");
+			config.setIpConfig("127.0.0.1");
+			config.setPortConfig(1235);
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
-			System.out.println("dbconfig.xml文件解析发生错误！");
-			config.setIp("127.0.0.1");
-			config.setPort(1234);
+			System.out.println("clientconfig.xml文件解析发生错误！");
+			config.setIpConfig("127.0.0.1");
+			config.setPortConfig(1235);
 		}
 		return config;
 	}

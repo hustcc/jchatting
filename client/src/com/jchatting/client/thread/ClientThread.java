@@ -122,6 +122,7 @@ public class ClientThread extends Thread {
 					}
 					chatUserFrame.setVisible(true);
 					chatUserFrame.receiveFileAction(fileSocketConfig);
+//					System.out.println("file length:" + fileSocketConfig.getFileLength());
 				}
 				
 				break;

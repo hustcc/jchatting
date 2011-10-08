@@ -219,6 +219,7 @@ public class ChatMainFrame extends JFrame implements ActionListener, MouseListen
 		//连接服务器，获得socket
 		try {
 			ChatMainFrame.socket = new Socket(ClientConfig.instance().getIp(), ClientConfig.instance().getPort());
+			
 			System.out.println("连接成功");
 			ClientMsgUtil.sendMsg(ChatMainFrame.getSocket(), DataPackage.CLIENT_ON, user.getAccount(), "SYSTEM", "");
 			
