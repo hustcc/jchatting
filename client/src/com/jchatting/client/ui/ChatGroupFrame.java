@@ -80,7 +80,7 @@ public class ChatGroupFrame extends JFrame implements ActionListener, WindowList
 		this.fontAttribute = new FontAttribute();
 		
 		
-		setTitle("Chat With [" + this.userInGroup.toString()+"]");
+		setTitle("Chat In [" + this.userInGroup.toString()+"]");
 		setBounds(100, 100, 350, 400);
 		setSize(400, 400);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
