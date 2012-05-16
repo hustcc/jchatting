@@ -23,7 +23,7 @@ public class DispatchConfig {
 	 * 单例模式
 	 */
 	private DispatchConfig() {
-		
+		//do nothing
 	}
 	
 	/**
