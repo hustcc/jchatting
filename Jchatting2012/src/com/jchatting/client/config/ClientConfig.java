@@ -1,34 +1,72 @@
 /**
- * 客户端应用的配置类，
- * 
- * 包括
- * 客户端连接服务器的url和端口
- * 客户端调用rmi的url和端口
- * 等
- * 单例模式，恶汉模式，线程安全
- */
+ * HomePage: http://wzwahl36.zzl.org/
+ * Copyright 2012 WZWAHL36.COM | HUST. 
+ * All right reserved. 
+ */ 
 package com.jchatting.client.config;
 
 /**
- * @author Xewee.Zhiwei.Wang
- * @version 2012-2-24 下午2:37:37
+ * 客户端应用连接的配置类，
+ * 
+ * 包括
+ * 客户端连接SOCKET服务器的url和端口
+ * 客户端调用RMI的IP和端口
+ * 等
+ * 单例模式，恶汉模式，线程安全
  */
 public class ClientConfig {
-private static final String CLIENT_CONFIG_FILE_PATH = "";
 	
-	public static final ClientConfig instance = parseFile(CLIENT_CONFIG_FILE_PATH);
+	private String socketIp;//聊天socket服务器ip
+	private int socketPort;//聊天socket服务器port
 	
-	private ClientConfig() {
+	private String rmiUrl;//安全连接数据库的rmi链接
+	//=以上每次连接数据库时，由服务器动态分配，目地是为了均匀分布服务器负荷======//
+	
+	public ClientConfig() {
 		
 	}
+
 	
-	private static ClientConfig parseFile(String filePath) {
-		ClientConfig clientConfig = new ClientConfig();
-		//TODO 使用java解析xml文件
-		return clientConfig;
+	//==GETTER AND SETTER====
+	/**
+	 * @return the socketIp
+	 */
+	public String getSocketIp() {
+		return socketIp;
 	}
-	
-	public static ClientConfig getConfig() {
-		return instance;
+
+	/**
+	 * @param socketIp the socketIp to set
+	 */
+	public void setSocketIp(String socketIp) {
+		this.socketIp = socketIp;
+	}
+
+	/**
+	 * @return the socketPort
+	 */
+	public int getSocketPort() {
+		return socketPort;
+	}
+
+	/**
+	 * @param socketPort the socketPort to set
+	 */
+	public void setSocketPort(int socketPort) {
+		this.socketPort = socketPort;
+	}
+
+	/**
+	 * @return the rmiUrl
+	 */
+	public String getRmiUrl() {
+		return rmiUrl;
+	}
+
+	/**
+	 * @param rmiUrl the rmiUrl to set
+	 */
+	public void setRmiUrl(String rmiUrl) {
+		this.rmiUrl = rmiUrl;
 	}
 }
