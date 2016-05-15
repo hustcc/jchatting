@@ -14,7 +14,7 @@ Google code上项目地址:[https://code.google.com/archive/p/jchatting/](https:
 提供如下功能：
 
 1. 用户注册，单点登录；
-2. http://my.oschina.net/wzwahl36/blog/32891好友添加、删除、修改；在线好友聊天，离线好友留言功能；
+2. 好友添加、删除、修改；在线好友聊天，离线好友留言功能；
 3. 好友上线离线即时更新或者提醒；
 4. 创建、加入、退出Chat群；群聊功能；
 5. 用户之间的文件发送功能（无文件大小限制）；
